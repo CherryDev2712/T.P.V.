@@ -77,10 +77,6 @@
                             <label for="precioProducto" class="form-label">Precio</label>
                             <input type="number" class="form-control" id="precioProducto" min="0" step="0.01" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="imagenProducto" class="form-label">Imagen del producto</label>
-                            <input type="file" class="form-control" id="imagenProducto" accept="image/*" required>
-                        </div>
                         <button type="submit" class="btn btn-primary">Guardar</button>
                     </form>
                 </div>
@@ -342,14 +338,12 @@
         });
     });
 
-    // Evento para agregar producto
+    // Evento para agregar producto (elimina lógica de imagen)
     productoForm.addEventListener("submit", (event) => {
         event.preventDefault();
         const categoriaId = parseInt(document.getElementById("categoriaProducto").value);
         const nombre = document.getElementById("nombreProducto").value;
         const precio = parseFloat(document.getElementById("precioProducto").value);
-        const imagenInput = document.getElementById("imagenProducto");
-        const imagenURL = imagenInput.files.length > 0 ? URL.createObjectURL(imagenInput.files[0]) : "https://via.placeholder.com/150";
 
         // Validaciones
         if (!nombre.trim()) {
@@ -376,14 +370,13 @@
             id: Date.now(),
             categoriaId: categoriaId,
             nombre: nombre,
-            precio: precio,
-            imagenURL: imagenURL
+            precio: precio
+            // imagenURL eliminado
         };
 
         guardarProducto(producto);
         crearCardProducto(producto);
         productoForm.reset();
-        imagenInput.value = '';
         new bootstrap.Modal(document.getElementById('productoModal')).hide();
         
         Swal.fire({
@@ -527,6 +520,7 @@
         btnAgregarProducto.style.display = 'none';
     }
 
+    // crearCardProducto: elimina la imagen de la card
     function crearCardProducto(producto) {
         const card = document.createElement("div");
         card.classList.add("card");
@@ -538,7 +532,6 @@
                     producto.precio;
 
         card.innerHTML = `
-            <img src="${producto.imagenURL}" class="card-img-top" alt="${producto.nombre}">
             <div class="card-body">
                 <h5 class="card-title">${producto.nombre}</h5>
                 <p class="card-text">Precio: $${precio.toFixed(2)}</p>

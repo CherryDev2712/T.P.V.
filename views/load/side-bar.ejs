@@ -1,340 +1,316 @@
-<div class="sidebar">
-    <div class="sidebar-header">
-        <h4 class="text-center mb-3">
-            Carrito de Venta
-            <span class="badge bg-primary ms-2" id="cartCounter">0</span>
-        </h4>
-    </div>
-    
-    <div class="table-responsive cart-items">
-        <table class="table table-hover align-middle" id="selectedProductsTable">
-            <thead class="table-light">
-                <tr>
-                    <th style="color: #fff;">Producto</th>
-                    <th class="text-end" style="color: #fff;">Precio</th>
-                    <th class="text-center" style="color: #fff;">Cantidad</th>
-                    <th class="text-end" style="color: #fff;">Subtotal</th>
-                    <th class="text-center" style="color: #fff;">Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="selectedProducts">
-                <!-- Productos dinámicos aquí -->
-            </tbody>
-        </table>
-    </div>
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        /* Estilos personalizados necesarios para mantener la apariencia exacta */
+        .sidebar {
+            background-color: #000;
+            transition: transform 0.3s ease;
+            color:  #fff;
+        }
+        
+        .table th {
+            background: rgba(255,255,255,0.05) !important;
+        }
+        
+        .btn-eliminar {
+            background: none;
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            transition: all 0.2s;
+        }
+        
+        .btn-eliminar:hover {
+            background: #dc3545;
+            color: white;
+        }
+        
+        #montoRecibido:focus, #nombreCliente:focus {
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.25);
+            border-color: #2ecc71;
+        }
+        
+        .new-product {
+            animation: itemAdded 0.3s ease-out;
+        }
+        
+        @keyframes itemAdded {
+            0% { transform: translateX(100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* Estilos responsivos */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100% !important;
+                height: 30vh !important;
+                bottom: 0;
+                top: auto !important;
+                background-color: #000;
+            }
+            
+            .sidebar.active {
+                transform: translateY(0);
+            }
+            
+            .sidebar-header {
+                display: none;
+            }
+        }
+        
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #2ecc71;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar position-fixed end-0 top-0 vh-100 d-flex flex-column shadow-lg" 
+         style="width: 400px; z-index: 1000; margin-top: 56px; max-height: 885px;">
+        <div class="sidebar-header p-4 border-bottom border-secondary">
+            <h4 class="text-center mb-0 text-white">
+                Carrito de Venta
+                <span class="badge bg-primary ms-2" id="cartCounter">0</span>
+            </h4>
+        </div>
+        
+        <div class="table-responsive cart-items flex-grow-1 overflow-auto px-2">
+            <table class="table table-hover align-middle m-0 text-white" id="selectedProductsTable">
+                <thead>
+                    <tr>
+                        <th style="color: #fff;">Producto</th>
+                        <th class="text-end" style="color: #fff;">Precio</th>
+                        <th class="text-center" style="color: #fff;">Cantidad</th>
+                        <th class="text-end" style="color: #fff;">Subtotal</th>
+                        <th class="text-center" style="color: #fff;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="selectedProducts">
+                    <!-- Productos dinámicos aquí -->
+                </tbody>
+            </table>
+        </div>
 
-    <div class="sidebar-footer mt-auto">
-        <div class="total-section bg-dark p-3 rounded-3">
-            <div class="d-flex justify-content-between align-items-center total-amount">
-                <span class="h5 mb-0">Total:</span>
-                <span class="h4 mb-0" id="totalAmount">$0.00</span>
+        <div class="sidebar-footer mt-auto p-3">
+            <div class="total-section bg-dark p-3 rounded-3">
+                <div class="d-flex justify-content-between align-items-center total-amount">
+                    <span class="h5 mb-0 text-white">Total:</span>
+                    <span class="h4 mb-0 text-white" id="totalAmount">$0.00</span>
+                </div>
+                <button id="finalizarVentaBtn" class="btn btn-success w-100 mt-3 text-white" disabled>
+                    <i class="bi bi-credit-card me-2"></i>Finalizar Venta
+                </button>
             </div>
-            <button id="finalizarVentaBtn" class="btn btn-success w-100 mt-3" style="background-color: #000000;" disabled>
-                <i class="bi bi-credit-card me-2"></i>Finalizar Venta
-            </button>
         </div>
     </div>
-</div>
 
-<!-- Modal de confirmación de venta -->
-<div class="modal fade" id="ventaModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-dark text-light">
-                <h5 class="modal-title">
-                    <i class="bi bi-receipt me-2"></i>Confirmar Venta
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row g-3">
-                    <!-- Sección de pago -->
-                    <div class="col-md-6">
-                        <div class="border p-3 rounded h-100">
-                            <h6 class="mb-3"><i class="bi bi-cash-coin me-2"></i>Información de Pago</h6>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Monto Recibido</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">$</span>
-                                    <input type="number" class="form-control" id="montoRecibido" step="0.01">
+    <!-- Modal de confirmación de venta -->
+    <div class="modal fade" id="ventaModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-receipt me-2"></i>Confirmar Venta
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <!-- Sección de pago -->
+                        <div class="col-md-6">
+                            <div class="border p-3 rounded h-100">
+                                <h6 class="mb-3"><i class="bi bi-cash-coin me-2"></i>Información de Pago</h6>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Monto Recibido</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="montoRecibido" step="0.01">
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Cambio</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">$</span>
-                                    <input type="text" class="form-control" id="cambio" readonly>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Cambio</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="text" class="form-control" id="cambio" readonly>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Sección de información adicional -->
-                    <div class="col-md-6">
-                        <div class="border p-3 rounded h-100">
-                            <h6 class="mb-3"><i class="bi bi-info-circle me-2"></i>Información Adicional</h6>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Nombre del Cliente</label>
-                                <input type="text" class="form-control" id="nombreCliente">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Método de Pago</label>
-                                <select class="form-select" id="tipoPago" required>
-                                    <option value="Efectivo">Efectivo</option>
-                                    <option value="Tarjeta">Tarjeta</option>
-                                    <option value="Transferencia">Transferencia</option>
-                                    <option value="Otro">Otro</option>
-                                </select>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Numero de Telefono</label>
-                                <input class="form-control" rows="2" id="numero" max="10" min="10">
+                        <!-- Sección de información adicional -->
+                        <div class="col-md-6">
+                            <div class="border p-3 rounded h-100">
+                                <h6 class="mb-3"><i class="bi bi-info-circle me-2"></i>Información Adicional</h6>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Nombre del Cliente</label>
+                                    <input type="text" class="form-control" id="nombreCliente">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Método de Pago</label>
+                                    <select class="form-select" id="tipoPago" required>
+                                        <option value="Efectivo">Efectivo</option>
+                                        <option value="Tarjeta">Tarjeta</option>
+                                        <option value="Transferencia">Transferencia</option>
+                                        <option value="Otro">Otro</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Numero de Telefono</label>
+                                    <input class="form-control" id="numero" maxlength="10" minlength="10">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle me-2"></i>Cancelar
-                </button>
-                <button type="button" class="btn btn-primary" id="confirmarVentaBtn">
-                    <i class="bi bi-check-circle me-2"></i>Confirmar Venta
-                </button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" id="confirmarVentaBtn">
+                        <i class="bi bi-check-circle me-2"></i>Confirmar Venta
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<style>
-.sidebar {
-    width: 400px;
-    background: linear-gradient(to bottom, #000000 10%, #0a192fde 100%);
-    color: #fff;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    box-shadow: -5px 0 15px rgba(0,0,0,0.2);
-    position: fixed;
-    right: 0;
-    top: 0;
-    z-index: 1000;
-    transition: transform 0.3s ease;
-    margin-top: 56px;
-    max-height: 885px;
-}
-
-.sidebar-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid #40566b;
-}
-
-.cart-items {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0 0.5rem;
-}
-
-.table {
-    --bs-table-color: #fff;
-    --bs-table-bg: transparent;
-    --bs-table-hover-color: #fff;
-    --bs-table-hover-bg: rgba(255,255,255,0.05);
-    margin-bottom: 0;
-}
-
-.table th {
-    font-weight: 500;
-    background: rgba(255,255,255,0.05);
-}
-
-.quantity-controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.quantity-controls button {
-    width: 30px;
-    height: 30px;
-    padding: 0;
-    border-radius: 50% !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-eliminar {
-    background: none;
-    border: 1px solid #dc3545;
-    color: #dc3545;
-    transition: all 0.2s;
-}
-
-.btn-eliminar:hover {
-    background: #dc3545;
-    color: white;
-}
-
-.total-section {
-    background: rgba(0,0,0,0.2);
-    border-radius: 0.5rem;
-    margin: 1rem;
-}
-
-.content {
-    margin-right: 400px;
-    transition: margin-right 0.3s ease;
-}
-
-#montoRecibido:focus, #nombreCliente:focus {
-    box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.25);
-    border-color: #2ecc71;
-}
-
-@media (max-width: 768px) {
-    .sidebar {
-        width: 100%;
-        height: 70vh;
-        bottom: 30%;
-        top: auto;
-        transform: translateY(100%);
-        max-height: 290px;
-    }
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    .sidebar.active {
-        transform: translateY(0);
-    }
-    
-    .cart-items {
-        max-height: 50vh;
-    }
-    .sidebar-header {
-        display: none;
-    }
-    .content {
-        margin-bottom: 290px;
-        margin-right: 0px;
-    }
-}
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const state = {
+            productos: JSON.parse(localStorage.getItem('productosSeleccionados')) || []
+        };
 
-@keyframes itemAdded {
-    0% { transform: translateX(100%); opacity: 0; }
-    100% { transform: translateX(0); opacity: 1; }
-}
-
-.new-product {
-    animation: itemAdded 0.3s ease-out;
-}
-
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: rgba(255,255,255,0.1);
-}
-
-::-webkit-scrollbar-thumb {
-    background: #2ecc71;
-    border-radius: 4px;
-}
-</style>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const state = {
-        productos: JSON.parse(localStorage.getItem('productosSeleccionados')) || []
-    };
-
-    // Elementos del DOM
-    const ventaModal = new bootstrap.Modal('#ventaModal');
-    const montoRecibido = document.getElementById('montoRecibido');
-    const cambioInput = document.getElementById('cambio');
-    const nombreClienteInput = document.getElementById('nombreCliente');
-    const tipoPagoSelect = document.getElementById('tipoPago');
-    const numeroInput = document.getElementById('numero');
-    
-    // Event Listeners
-    document.getElementById('finalizarVentaBtn').addEventListener('click', mostrarModalVenta);
-    document.getElementById('confirmarVentaBtn').addEventListener('click', confirmarVenta);
-    montoRecibido.addEventListener('input', actualizarCambio);
-    
-    // Inicialización
-    init();
-
-    function init() {
-        convertirPreciosNumeros();
-        updateState();
-        setupEventDelegation();
-    }
-
-    function setupEventDelegation() {
-        document.getElementById('selectedProducts').addEventListener('click', (e) => {
-            const target = e.target;
-            const row = target.closest('tr');
-            if (!row) return;
-            
-            const productId = row.dataset.id;
-            
-            if (target.closest('.decrement')) {
-                updateQuantity(productId, -1);
-            } else if (target.closest('.increment')) {
-                updateQuantity(productId, 1);
-            } else if (target.closest('.btn-eliminar')) {
-                removeProduct(productId);
-            }
-        });
-    }
-
-    function updateState() {
-        localStorage.setItem('productosSeleccionados', JSON.stringify(state.productos));
-        renderCart();
-        updateTotals();
-        updateCartCounter();
-        toggleCheckoutButton();
-    }
-
-    function renderCart() {
-        const tbody = document.getElementById("selectedProducts");
-        tbody.innerHTML = state.productos.map(item => `
-            <tr class="new-product" data-id="${item.producto.id}">
-                <td>${item.producto.nombre}</td>
-                <td class="text-end">$${item.producto.precio.toFixed(2)}</td>
-                <td class="text-center">
-                    <div class="quantity-controls">
-                        <button class="btn btn-sm btn-outline-light decrement">−</button>
-                        <span class="quantity-value">${item.cantidad}</span>
-                        <button class="btn btn-sm btn-outline-light increment">+</button>
-                    </div>
-                </td>
-                <td class="text-end">$${(item.producto.precio * item.cantidad).toFixed(2)}</td>
-                <td class="text-center">
-                    <button class="btn btn-sm btn-eliminar">
-                        X
-                    </button>
-                </td>
-            </tr>
-        `).join('');
-    }
-
-    function updateQuantity(productId, delta) {
-        const index = state.productos.findIndex(item => item.producto.id == productId);
-        if (index === -1) return;
-
-        state.productos[index].cantidad += delta;
+        // Elementos del DOM
+        const ventaModal = new bootstrap.Modal('#ventaModal');
+        const montoRecibido = document.getElementById('montoRecibido');
+        const cambioInput = document.getElementById('cambio');
+        const nombreClienteInput = document.getElementById('nombreCliente');
+        const tipoPagoSelect = document.getElementById('tipoPago');
+        const numeroInput = document.getElementById('numero');
         
-        if (state.productos[index].cantidad < 1) {
+        // Event Listeners
+        document.getElementById('finalizarVentaBtn').addEventListener('click', mostrarModalVenta);
+        document.getElementById('confirmarVentaBtn').addEventListener('click', confirmarVenta);
+        montoRecibido.addEventListener('input', actualizarCambio);
+        
+        // Inicialización
+        init();
+
+        function init() {
+            convertirPreciosNumeros();
+            updateState();
+            setupEventDelegation();
+        }
+
+        function setupEventDelegation() {
+            document.getElementById('selectedProducts').addEventListener('click', (e) => {
+                const target = e.target;
+                const row = target.closest('tr');
+                if (!row) return;
+                
+                const productId = row.dataset.id;
+                
+                if (target.closest('.decrement')) {
+                    updateQuantity(productId, -1);
+                } else if (target.closest('.increment')) {
+                    updateQuantity(productId, 1);
+                } else if (target.closest('.btn-eliminar')) {
+                    removeProduct(productId);
+                }
+            });
+        }
+
+        function updateState() {
+            localStorage.setItem('productosSeleccionados', JSON.stringify(state.productos));
+            renderCart();
+            updateTotals();
+            updateCartCounter();
+            toggleCheckoutButton();
+        }
+
+        function renderCart() {
+            const tbody = document.getElementById("selectedProducts");
+            tbody.innerHTML = state.productos.map(item => `
+                <tr class="new-product" data-id="${item.producto.id}">
+                    <td>${item.producto.nombre}</td>
+                    <td class="text-end">$${item.producto.precio.toFixed(2)}</td>
+                    <td class="text-center">
+                        <div class="d-flex align-items-center justify-content-center gap-2">
+                            <button class="btn btn-sm btn-outline-light decrement">−</button>
+                            <span class="quantity-value">${item.cantidad}</span>
+                            <button class="btn btn-sm btn-outline-light increment">+</button>
+                        </div>
+                    </td>
+                    <td class="text-end">$${(item.producto.precio * item.cantidad).toFixed(2)}</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-eliminar">
+                            X
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateQuantity(productId, delta) {
+            const index = state.productos.findIndex(item => item.producto.id == productId);
+            if (index === -1) return;
+
+            state.productos[index].cantidad += delta;
+            
+            if (state.productos[index].cantidad < 1) {
+                Swal.fire({
+                    title: '¿Eliminar producto?',
+                    text: "¿Deseas eliminar este producto del carrito?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        state.productos.splice(index, 1);
+                        updateState();
+                        showToast('Producto eliminado del carrito', 'warning');
+                    } else {
+                        state.productos[index].cantidad = 1;
+                        updateState();
+                    }
+                });
+            } else {
+                updateState();
+                showToast('Cantidad actualizada', 'info', 1000);
+            }
+        }
+
+        function removeProduct(productId) {
             Swal.fire({
                 title: '¿Eliminar producto?',
-                text: "¿Deseas eliminar este producto del carrito?",
-                icon: 'question',
+                text: "Esta acción no se puede deshacer",
+                icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
@@ -342,188 +318,164 @@ document.addEventListener("DOMContentLoaded", () => {
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    state.productos.splice(index, 1);
+                    state.productos = state.productos.filter(item => item.producto.id != productId);
                     updateState();
                     showToast('Producto eliminado del carrito', 'warning');
-                } else {
-                    state.productos[index].cantidad = 1;
-                    updateState();
                 }
             });
-        } else {
-            updateState();
-            showToast('Cantidad actualizada', 'info', 1000);
-        }
-    }
-
-    function removeProduct(productId) {
-        Swal.fire({
-            title: '¿Eliminar producto?',
-            text: "Esta acción no se puede deshacer",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                state.productos = state.productos.filter(item => item.producto.id != productId);
-                updateState();
-                showToast('Producto eliminado del carrito', 'warning');
-            }
-        });
-    }
-
-    function updateTotals() {
-        const total = state.productos.reduce((acc, item) => 
-            acc + (item.producto.precio * item.cantidad), 0);
-        
-        document.getElementById("totalAmount").textContent = `$${total.toFixed(2)}`;
-    }
-
-    function updateCartCounter() {
-        document.getElementById('cartCounter').textContent = state.productos.length;
-    }
-
-    function toggleCheckoutButton() {
-        document.getElementById("finalizarVentaBtn").disabled = state.productos.length === 0;
-    }
-
-    function actualizarCambio() {
-        const total = parseFloat(document.getElementById('totalAmount').textContent.replace('$', ''));
-        const recibido = parseFloat(montoRecibido.value) || 0;
-        cambioInput.value = (recibido - total).toFixed(2);
-    }
-
-    function mostrarModalVenta() {
-        ventaModal.show();
-        montoRecibido.value = '';
-        cambioInput.value = '';
-        nombreClienteInput.value = '';
-        tipoPagoSelect.value = 'Efectivo';
-        numeroInput.value = '';
-        montoRecibido.focus();
-    }
-
-    function confirmarVenta() {
-        const total = parseFloat(document.getElementById('totalAmount').textContent.replace('$', ''));
-        const recibido = parseFloat(montoRecibido.value) || 0;
-        
-        if (recibido < total) {
-            Swal.fire({
-                title: 'Monto insuficiente',
-                text: 'El monto recibido es menor que el total de la venta',
-                icon: 'error',
-                confirmButtonText: 'Entendido'
-            });
-            return;
         }
 
-        const venta = {
-            fecha: new Date().toISOString(),
-            cliente: nombreClienteInput.value || 'Consumidor Final',
-            tipoPago: tipoPagoSelect.value,
-            montoRecibido: recibido,
-            cambio: parseFloat(cambioInput.value),
-            total: total,
-            notas: numero.value,
-            productos: state.productos.map(item => ({
-                id: item.producto.id,
-                nombre: item.producto.nombre,
-                precioUnitario: item.producto.precio,
-                cantidad: item.cantidad
-            }))
-        };
+        function updateTotals() {
+            const total = state.productos.reduce((acc, item) => 
+                acc + (item.producto.precio * item.cantidad), 0);
+            
+            document.getElementById("totalAmount").textContent = `$${total.toFixed(2)}`;
+        }
 
-        Swal.fire({
-            title: 'Confirmar Venta',
-            html: `¿Deseas finalizar esta venta por <strong>$${total.toFixed(2)}</strong>?`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#28a745',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Sí, confirmar venta',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                guardarVenta(venta);
-                vaciarCarrito();
-                ventaModal.hide();
-                
-                // Mostrar recibo de venta
+        function updateCartCounter() {
+            document.getElementById('cartCounter').textContent = state.productos.length;
+        }
+
+        function toggleCheckoutButton() {
+            document.getElementById("finalizarVentaBtn").disabled = state.productos.length === 0;
+        }
+
+        function actualizarCambio() {
+            const total = parseFloat(document.getElementById('totalAmount').textContent.replace('$', ''));
+            const recibido = parseFloat(montoRecibido.value) || 0;
+            cambioInput.value = (recibido - total).toFixed(2);
+        }
+
+        function mostrarModalVenta() {
+            ventaModal.show();
+            montoRecibido.value = '';
+            cambioInput.value = '';
+            nombreClienteInput.value = '';
+            tipoPagoSelect.value = 'Efectivo';
+            numeroInput.value = '';
+            montoRecibido.focus();
+        }
+
+        function confirmarVenta() {
+            const total = parseFloat(document.getElementById('totalAmount').textContent.replace('$', ''));
+            const recibido = parseFloat(montoRecibido.value) || 0;
+            
+            if (recibido < total) {
                 Swal.fire({
-                    title: '¡Venta Exitosa!',
-                    html: `
-                        <div style="text-align: left;">
-                            <p><strong>Cliente:</strong> ${venta.cliente}</p>
-                            <p><strong>Total:</strong> $${venta.total.toFixed(2)}</p>
-                            <p><strong>Recibido:</strong> $${venta.montoRecibido.toFixed(2)}</p>
-                            <p><strong>Cambio:</strong> $${venta.cambio.toFixed(2)}</p>
-                            <p><strong>Método de pago:</strong> ${venta.tipoPago}</p>
-                            ${venta.notas ? `<p><strong>Notas:</strong> ${venta.notas}</p>` : ''}
-                        </div>
-                    `,
-                    icon: 'success',
-                    showCancelButton: true,
-                })
+                    title: 'Monto insuficiente',
+                    text: 'El monto recibido es menor que el total de la venta',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
             }
-        });
-    }
 
-    function guardarVenta(venta) {
-        const ventas = JSON.parse(localStorage.getItem('ventas')) || [];
-        ventas.push(venta);
-        localStorage.setItem('ventas', JSON.stringify(ventas));
-    }
+            const venta = {
+                fecha: new Date().toISOString(),
+                cliente: nombreClienteInput.value || 'Consumidor Final',
+                tipoPago: tipoPagoSelect.value,
+                montoRecibido: recibido,
+                cambio: parseFloat(cambioInput.value),
+                total: total,
+                notas: numeroInput.value,
+                productos: state.productos.map(item => ({
+                    id: item.producto.id,
+                    nombre: item.producto.nombre,
+                    precioUnitario: item.producto.precio,
+                    cantidad: item.cantidad
+                }))
+            };
 
-    function vaciarCarrito() {
-        state.productos = [];
-        updateState();
-    }
-
-    function convertirPreciosNumeros() {
-        state.productos = state.productos.map(item => ({
-            ...item,
-            producto: {
-                ...item.producto,
-                precio: typeof item.producto.precio === 'string' ? 
-                      parseFloat(item.producto.precio) : 
-                      item.producto.precio
-            }
-        }));
-    }
-
-    function showToast(message, type = 'success', timer = 3000) {
-        const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: timer,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
-        });
-        
-        Toast.fire({
-            icon: type,
-            title: message
-        });
-    }
-
-    // Sincronización externa
-    document.addEventListener('actualizarSidebar', () => {
-        state.productos = JSON.parse(localStorage.getItem('productosSeleccionados')) || [];
-        convertirPreciosNumeros();
-        updateState();
-        
-        // Mostrar notificación cuando se agrega un nuevo producto
-        if (state.productos.length > 0) {
-            const lastProduct = state.productos[state.productos.length - 1];
-            showToast(`${lastProduct.producto.nombre} agregado al carrito`, 'success');
+            Swal.fire({
+                title: 'Confirmar Venta',
+                html: `¿Deseas finalizar esta venta por <strong>$${total.toFixed(2)}</strong>?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, confirmar venta',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    guardarVenta(venta);
+                    vaciarCarrito();
+                    ventaModal.hide();
+                    
+                    // Mostrar recibo de venta
+                    Swal.fire({
+                        title: '¡Venta Exitosa!',
+                        html: `
+                            <div style="text-align: left;">
+                                <p><strong>Cliente:</strong> ${venta.cliente}</p>
+                                <p><strong>Total:</strong> $${venta.total.toFixed(2)}</p>
+                                <p><strong>Recibido:</strong> $${venta.montoRecibido.toFixed(2)}</p>
+                                <p><strong>Cambio:</strong> $${venta.cambio.toFixed(2)}</p>
+                                <p><strong>Método de pago:</strong> ${venta.tipoPago}</p>
+                                ${venta.notas ? `<p><strong>Notas:</strong> ${venta.notas}</p>` : ''}
+                            </div>
+                        `,
+                        icon: 'success',
+                        showCancelButton: true,
+                    })
+                }
+            });
         }
+
+        function guardarVenta(venta) {
+            const ventas = JSON.parse(localStorage.getItem('ventas')) || [];
+            ventas.push(venta);
+            localStorage.setItem('ventas', JSON.stringify(ventas));
+        }
+
+        function vaciarCarrito() {
+            state.productos = [];
+            updateState();
+        }
+
+        function convertirPreciosNumeros() {
+            state.productos = state.productos.map(item => ({
+                ...item,
+                producto: {
+                    ...item.producto,
+                    precio: typeof item.producto.precio === 'string' ? 
+                          parseFloat(item.producto.precio) : 
+                          item.producto.precio
+                }
+            }));
+        }
+
+        function showToast(message, type = 'success', timer = 3000) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: timer,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+            
+            Toast.fire({
+                icon: type,
+                title: message
+            });
+        }
+
+        // Sincronización externa
+        document.addEventListener('actualizarSidebar', () => {
+            state.productos = JSON.parse(localStorage.getItem('productosSeleccionados')) || [];
+            convertirPreciosNumeros();
+            updateState();
+            
+            // Mostrar notificación cuando se agrega un nuevo producto
+            if (state.productos.length > 0) {
+                const lastProduct = state.productos[state.productos.length - 1];
+                showToast(`${lastProduct.producto.nombre} agregado al carrito`, 'success');
+            }
+        });
     });
-});
     </script>
+</body>
+</html>

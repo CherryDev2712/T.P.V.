@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 8000; // Use environment variable or fallback to 3001
+const PORT = 8000; // Use environment variable or fallback to 3001
 
 // Configuración de middleware
 app.use(express.json());
