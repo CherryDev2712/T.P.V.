@@ -77,10 +77,6 @@
                             <label for="precioProducto" class="form-label">Precio</label>
                             <input type="number" class="form-control" id="precioProducto" min="0" step="0.01" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="imagenProducto" class="form-label">Imagen del producto</label>
-                            <input type="file" class="form-control" id="imagenProducto" accept="image/*" required>
-                        </div>
                         <button type="submit" class="btn btn-primary">Guardar</button>
                     </form>
                 </div>
@@ -310,12 +306,12 @@
         document.dispatchEvent(event);
     }
 
-    // Evento para agregar categoría
+    // Evento para agregar categoría (id generado del nombre normalizado)
     categoriaForm.addEventListener("submit", (event) => {
         event.preventDefault();
-        const nombre = document.getElementById("nombreCategoria").value;
-        
-        if (!nombre.trim()) {
+        const nombre = document.getElementById("nombreCategoria").value.trim();
+
+        if (!nombre) {
             Swal.fire({
                 title: 'Error',
                 text: 'Por favor ingresa un nombre para la categoría',
@@ -324,14 +320,30 @@
             });
             return;
         }
-        
-        const categoria = { id: Date.now(), nombre: nombre };
-        
+
+        // id de la categoría: nombre normalizado (minúsculas y guiones)
+        const categoriaId = nombre.toLowerCase().replace(/\s+/g, '-');
+
+        // Control de unicidad de categoría
+        let categorias = JSON.parse(localStorage.getItem('categorias')) || [];
+        const categoriaExistente = categorias.find(c => c.id === categoriaId);
+        if (categoriaExistente) {
+            Swal.fire({
+                title: 'Nombre ocupado',
+                text: 'Ya existe una categoría con ese nombre. Por favor elige otro.',
+                icon: 'warning',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+
+        const categoria = { id: categoriaId, nombre: nombre };
+
         guardarCategoria(categoria);
         crearCardCategoria(categoria);
         categoriaForm.reset();
-        new bootstrap.Modal(document.getElementById('categoriaModal'));
-        
+        new bootstrap.Modal(document.getElementById('categoriaModal')).hide();
+
         Swal.fire({
             title: '¡Éxito!',
             text: 'Categoría agregada correctamente',
@@ -342,17 +354,15 @@
         });
     });
 
-    // Evento para agregar producto
+    // Evento para agregar producto (id generado del nombre normalizado)
     productoForm.addEventListener("submit", (event) => {
         event.preventDefault();
-        const categoriaId = parseInt(document.getElementById("categoriaProducto").value);
-        const nombre = document.getElementById("nombreProducto").value;
+        const categoriaId = document.getElementById("categoriaProducto").value;
+        const nombre = document.getElementById("nombreProducto").value.trim();
         const precio = parseFloat(document.getElementById("precioProducto").value);
-        const imagenInput = document.getElementById("imagenProducto");
-        const imagenURL = imagenInput.files.length > 0 ? URL.createObjectURL(imagenInput.files[0]) : "https://via.placeholder.com/150";
 
         // Validaciones
-        if (!nombre.trim()) {
+        if (!nombre) {
             Swal.fire({
                 title: 'Error',
                 text: 'Por favor ingresa un nombre para el producto',
@@ -372,20 +382,34 @@
             return;
         }
 
+        // id del producto: nombre normalizado (minúsculas y guiones)
+        const productoId = nombre.toLowerCase().replace(/\s+/g, '-');
+
+        // Control de unicidad de producto
+        let productos = JSON.parse(localStorage.getItem('productos')) || [];
+        const productoExistente = productos.find(p => p.id === productoId);
+        if (productoExistente) {
+            Swal.fire({
+                title: 'Nombre ocupado',
+                text: 'Ya existe un producto con ese nombre. Por favor elige otro.',
+                icon: 'warning',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+
         const producto = {
-            id: Date.now(),
+            id: productoId,
             categoriaId: categoriaId,
             nombre: nombre,
-            precio: precio,
-            imagenURL: imagenURL
+            precio: precio
         };
 
         guardarProducto(producto);
         crearCardProducto(producto);
         productoForm.reset();
-        imagenInput.value = '';
         new bootstrap.Modal(document.getElementById('productoModal')).hide();
-        
+
         Swal.fire({
             title: '¡Éxito!',
             text: 'Producto agregado correctamente',
@@ -453,18 +477,12 @@
 
     function cargarProductos(categoriaId) {
         const productos = JSON.parse(localStorage.getItem('productos')) || [];
-        
-        // Convertir precios a números
-        const productosParseados = productos.map(p => ({
-            ...p,
-            precio: typeof p.precio === 'string' ? parseFloat(p.precio) : p.precio
-        }));
-        
         productoContainer.innerHTML = '';
-        
-        productosParseados.filter(p => p.categoriaId === categoriaId).forEach(producto => {
-            crearCardProducto(producto);
-        });
+        productos
+            .filter(p => p.categoriaId == categoriaId)
+            .forEach(producto => {
+                crearCardProducto(producto);
+            });
     }
 
     function actualizarSelectCategorias() {
@@ -481,6 +499,7 @@
     function crearCardCategoria(categoria) {
         const card = document.createElement("div");
         card.classList.add("categoria-card");
+        card.id = `categoria-${categoria.id}`;
         card.dataset.id = categoria.id;
         card.innerHTML = `
             <h3>${categoria.nombre} <i class="bi bi-box-seam"></i></h3>
@@ -491,7 +510,11 @@
             categoriasContainer.style.display = 'none';
             productoContainer.style.display = 'flex';
             btnAgregarProducto.style.display = 'flex';
-            
+
+            // Elimina el back button anterior si existe
+            const oldBackButton = document.querySelector('.back-button');
+            if (oldBackButton) oldBackButton.remove();
+
             const backButton = document.createElement('div');
             backButton.classList.add('back-button');
             backButton.innerHTML = `
@@ -500,13 +523,13 @@
                 </svg>
                 Volver a categorías
             `;
-            
             backButton.addEventListener('click', (e) => {
                 e.stopPropagation();
                 volverACategorias();
             });
-            
             productoContainer.parentNode.insertBefore(backButton, productoContainer);
+
+            // LIMPIA el contenedor y carga los productos de la categoría seleccionada
             cargarProductos(categoria.id);
         });
         
@@ -527,9 +550,11 @@
         btnAgregarProducto.style.display = 'none';
     }
 
+    // crearCardProducto: elimina la imagen de la card
     function crearCardProducto(producto) {
         const card = document.createElement("div");
         card.classList.add("card");
+        card.id = `producto-${producto.id}`;
         card.dataset.id = producto.id;
         
         // Asegurar que el precio sea número
@@ -538,7 +563,6 @@
                     producto.precio;
 
         card.innerHTML = `
-            <img src="${producto.imagenURL}" class="card-img-top" alt="${producto.nombre}">
             <div class="card-body">
                 <h5 class="card-title">${producto.nombre}</h5>
                 <p class="card-text">Precio: $${precio.toFixed(2)}</p>
