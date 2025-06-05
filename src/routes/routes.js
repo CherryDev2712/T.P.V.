@@ -26,4 +26,10 @@ router.get('/clientes', (req, res) => {
   )
 })
 
+router.get('/secret', (req, res) => {
+  res.render('secret',
+    {titulo: 'Tu no deverias estar aqui'}  
+  )
+})
+
 export default router;
