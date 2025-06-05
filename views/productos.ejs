@@ -80,7 +80,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="imagenProducto" class="form-label">Imagen del producto</label>
-                            <input type="file" class="form-control" id="imagenProducto" accept="image/*">
+                            <input type="file" class="form-control" id="imagenProducto" accept="image/*" required>
                         </div>
                         <div class="d-flex justify-content-between">
                             <button type="button" class="btn btn-danger" id="btnEliminarProducto" style="display: none;">Eliminar</button>
@@ -242,7 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
 
         const nombre = document.getElementById("nombreCategoria").value.trim();
-        const categoriaId = document.getElementById("categoriaId").value;
+        const categoriaId = nombre.toLowerCase().replace(/\s+/g, '-');
 
         if (!nombre) {
             Swal.fire({
@@ -254,20 +254,30 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Crear/actualizar objeto categoría
+        // Control de unicidad de categoría
+        let categorias = JSON.parse(localStorage.getItem('categorias')) || [];
+        const categoriaExistente = categorias.find(c => c.id === categoriaId);
+
+        // Si es nueva (no edición) y ya existe, alerta
+        if (!document.getElementById("categoriaId").value && categoriaExistente) {
+            Swal.fire({
+                title: 'Nombre ocupado',
+                text: 'Ya existe una categoría con ese nombre. Por favor elige otro.',
+                icon: 'warning',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+
         const categoria = {
-            id: categoriaId || Date.now(),
+            id: categoriaId,
             nombre: nombre
         };
 
-        // Guardar en localStorage
         guardarCategoria(categoria);
-        
-        // Resetear y cerrar modal
         categoriaForm.reset();
-        
-        // Mostrar notificación de éxito
-        const message = categoriaId ? 'Categoría actualizada' : 'Categoría agregada';
+
+        const message = document.getElementById("categoriaId").value ? 'Categoría actualizada' : 'Categoría agregada';
         Swal.fire({
             title: '¡Éxito!',
             text: `${message} correctamente`,
@@ -310,7 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
     productoForm.addEventListener("submit", (event) => {
         event.preventDefault();
 
-        const categoriaId = parseInt(document.getElementById("categoriaProducto").value);
+        const categoriaId = document.getElementById("categoriaProducto").value;
         const nombre = document.getElementById("nombreProducto").value.trim();
         const precio = parseFloat(document.getElementById("precioProducto").value);
         const imagenInput = document.getElementById("imagenProducto");
@@ -318,7 +328,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const imagenURL = imagenInput.files.length > 0 ? URL.createObjectURL(imagenInput.files[0]) : 
                         (editingProducto ? editingProducto.imagenURL : "https://via.placeholder.com/150");
 
-        // Validaciones
         if (!nombre) {
             Swal.fire({
                 title: 'Error',
@@ -339,24 +348,35 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Crear objeto producto
+        // Control de unicidad de producto
+        let productos = JSON.parse(localStorage.getItem('productos')) || [];
+        const productoIdFinal = productoId || nombre.toLowerCase().replace(/\s+/g, '-');
+        const productoExistente = productos.find(p => p.id === productoIdFinal);
+
+        // Si es nuevo (no edición) y ya existe, alerta
+        if (!productoId && productoExistente) {
+            Swal.fire({
+                title: 'Nombre ocupado',
+                text: 'Ya existe un producto con ese nombre. Por favor elige otro.',
+                icon: 'warning',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+
         const producto = {
-            id: productoId || Date.now(),
+            id: productoIdFinal,
             categoriaId: categoriaId,
             nombre: nombre,
             precio: precio.toFixed(2),
             imagenURL: imagenURL
         };
 
-        // Guardar en localStorage
         guardarProducto(producto);
-        
-        // Resetear y cerrar modal
         productoForm.reset();
         imagenInput.value = '';
         productoModal.hide();
-        
-        // Mostrar notificación de éxito
+
         const message = productoId ? 'Producto actualizado' : 'Producto agregado';
         Swal.fire({
             title: '¡Éxito!',
@@ -445,47 +465,59 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
         categorias.forEach(categoria => {
+            // Usar nombre normalizado como id
+            const categoriaId = categoria.id;
+            const categoriaCardId = `categoria-${categoriaId}`;
+            const editBtnId = `edit-categoria-${categoriaId}`;
+            const deleteBtnId = `delete-categoria-${categoriaId}`;
+
             const categoriaCard = document.createElement("div");
+            categoriaCard.id = categoriaCardId;
             categoriaCard.classList.add("categoria-card");
-            
+
             // Obtener productos de esta categoría
-            const productosCategoria = productos.filter(p => p.categoriaId == categoria.id);
-            
+            const productosCategoria = productos.filter(p => p.categoriaId == categoriaId);
+
             categoriaCard.innerHTML = `
-                <div class="categoria-header">
-                    <h3 class="categoria-title">${categoria.nombre}</h3>
-                    <div class="categoria-actions">
-                        <button class="btn-edit" data-id="${categoria.id}">Editar</button>
-                        <button class="btn-delete" data-id="${categoria.id}">Eliminar</button>
+                <div class="categoria-header" id="header-${categoriaId}">
+                    <h3 class="categoria-title" id="title-${categoriaId}">${categoria.nombre}</h3>
+                    <div class="categoria-actions" id="actions-${categoriaId}">
+                        <button class="btn btn-info" id="${editBtnId}" data-id="${categoriaId}">Editar</button>
+                        <button class="btn btn-danger" id="${deleteBtnId}" data-id="${categoriaId}">Eliminar</button>
                     </div>
                 </div>
-                <div class="productos-container" id="productos-${categoria.id}">
+                <div class="productos-container" id="productos-${categoriaId}">
                     ${productosCategoria.length === 0 ? 
                       '<p class="text-muted">No hay productos en esta categoría</p>' : 
-                      productosCategoria.map(producto => `
-                        <div class="producto-card" data-id="${producto.id}">
-                            <img src="${producto.imagenURL}" class="producto-img" alt="${producto.nombre}">
-                            <div class="producto-body">
-                                <h5 class="producto-title">${producto.nombre}</h5>
-                                <div class="producto-precio">$${producto.precio}</div>
-                                <div class="producto-actions">
-                                    <button class="btn-edit" data-id="${producto.id}">Editar</button>
-                                    <button class="btn-delete" data-id="${producto.id}">Eliminar</button>
+                      productosCategoria.map(producto => {
+                        const productoCardId = `producto-${producto.id}`;
+                        const editProdBtnId = `edit-producto-${producto.id}`;
+                        const deleteProdBtnId = `delete-producto-${producto.id}`;
+                        return `
+                            <div class="producto-card" id="${productoCardId}" data-id="${producto.id}">
+                                <img src="${producto.imagenURL}" class="producto-img" alt="${producto.nombre}">
+                                <div class="producto-body" id="body-${producto.id}">
+                                    <h5 class="producto-title" id="title-prod-${producto.id}">${producto.nombre}</h5>
+                                    <div class="producto-precio" id="precio-prod-${producto.id}">$${producto.precio}</div>
+                                    <div class="producto-actions" id="actions-prod-${producto.id}">
+                                        <button class="btn btn-info" id="${editProdBtnId}" data-id="${producto.id}">Editar</button>
+                                        <button class="btn btn-danger" id="${deleteProdBtnId}" data-id="${producto.id}">Eliminar</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                      `).join('')}
+                        `;
+                      }).join('')}
                 </div>
             `;
-            
+
             categoriasContainer.appendChild(categoriaCard);
-            
+
             // Eventos para botones de categoría
-            categoriaCard.querySelector('.categoria-actions .btn-edit').addEventListener('click', () => {
-                editarCategoria(categoria.id);
+            document.getElementById(editBtnId).addEventListener('click', () => {
+                editarCategoria(categoriaId);
             });
-            
-            categoriaCard.querySelector('.categoria-actions .btn-delete').addEventListener('click', (e) => {
+
+            document.getElementById(deleteBtnId).addEventListener('click', (e) => {
                 e.stopPropagation();
                 Swal.fire({
                     title: '¿Eliminar categoría?',
@@ -499,8 +531,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        eliminarCategoria(categoria.id);
-                        
+                        eliminarCategoria(categoriaId);
                         Swal.fire({
                             title: '¡Eliminada!',
                             text: 'La categoría y sus productos han sido eliminados',
@@ -511,17 +542,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 });
             });
-            
+
             // Eventos para productos
             productosCategoria.forEach(producto => {
-                const productoCard = categoriaCard.querySelector(`.producto-card[data-id="${producto.id}"]`);
-                
-                productoCard.querySelector('.btn-edit').addEventListener('click', (e) => {
+                const editProdBtnId = `edit-producto-${producto.id}`;
+                const deleteProdBtnId = `delete-producto-${producto.id}`;
+
+                document.getElementById(editProdBtnId).addEventListener('click', (e) => {
                     e.stopPropagation();
                     editarProducto(producto.id);
                 });
-                
-                productoCard.querySelector('.btn-delete').addEventListener('click', (e) => {
+
+                document.getElementById(deleteProdBtnId).addEventListener('click', (e) => {
                     e.stopPropagation();
                     Swal.fire({
                         title: '¿Eliminar producto?',
@@ -536,7 +568,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     }).then((result) => {
                         if (result.isConfirmed) {
                             eliminarProducto(producto.id);
-                            
                             Swal.fire({
                                 title: '¡Eliminado!',
                                 text: 'El producto ha sido eliminado',
