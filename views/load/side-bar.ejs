@@ -16,6 +16,12 @@
             padding: 0;
             box-sizing: border-box;
         }
+
+        main {
+            margin-right: 400px; /* Espacio para la barra lateral */
+            transition: margin-right 0.3s ease;
+        }
+
         .sidebar {
             position: fixed !important;
             right: 0;
@@ -67,7 +73,7 @@
                 left: 0;
                 right: 0;
                 bottom: 0px !important;
-                height: calc(50vh - 65px) !important;
+                height: 300px !important;
                 margin-top: 0 !important;
                 background-color: #000;
                 border-radius: 0;
@@ -82,7 +88,11 @@
             }
 
             main {
-                margin-bottom: 339.21px !important; /* Ajuste para evitar superposición */
+                margin: 0px !important;
+            }
+
+            .content {
+                margin-bottom: 300px;
             }
         }
         
