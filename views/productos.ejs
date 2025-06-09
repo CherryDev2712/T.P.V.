@@ -163,8 +163,15 @@
     }
     .productos-container {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: row;
         gap: 15px;
+        align-items: flex-start;
+        overflow-x: auto;
+        overflow-y: hidden;
+        width: 100%;
+        padding-bottom: 10px;
+        scrollbar-color: #bbb #eee;
+        scrollbar-width: thin;
     }
     .producto-card {
         width: 200px;
@@ -276,6 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         guardarCategoria(categoria);
         categoriaForm.reset();
+        categoriaModal.hide();
 
         const message = document.getElementById("categoriaId").value ? 'Categoría actualizada' : 'Categoría agregada';
         Swal.fire({
@@ -379,8 +387,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         guardarProducto(producto);
         productoForm.reset();
-        imagenInput.value = '';
         productoModal.hide();
+        imagenInput.value = '';
 
         const message = productoId ? 'Producto actualizado' : 'Producto agregado';
         Swal.fire({
