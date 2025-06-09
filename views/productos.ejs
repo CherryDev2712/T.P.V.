@@ -276,6 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         guardarCategoria(categoria);
         categoriaForm.reset();
+        categoriaModal.hide();
 
         const message = document.getElementById("categoriaId").value ? 'Categoría actualizada' : 'Categoría agregada';
         Swal.fire({
@@ -317,7 +318,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Evento para agregar/editar producto
-    productoForm.addEventListener("submit", (event) => {
+    productoForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         const categoriaId = document.getElementById("categoriaProducto").value;
@@ -325,8 +326,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const precio = parseFloat(document.getElementById("precioProducto").value);
         const imagenInput = document.getElementById("imagenProducto");
         const productoId = document.getElementById("productoId").value;
-        const imagenURL = imagenInput.files.length > 0 ? URL.createObjectURL(imagenInput.files[0]) : 
-                        (editingProducto ? editingProducto.imagenURL : "https://via.placeholder.com/150");
+
+        let imagenURL = "https://via.placeholder.com/150";
+        if (imagenInput.files.length > 0) {
+            imagenURL = await fileToBase64(imagenInput.files[0]);
+        } else if (editingProducto && editingProducto.imagenURL) {
+            imagenURL = editingProducto.imagenURL;
+        }
 
         if (!nombre) {
             Swal.fire({
@@ -374,8 +380,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         guardarProducto(producto);
         productoForm.reset();
-        imagenInput.value = '';
         productoModal.hide();
+        imagenInput.value = '';
 
         const message = productoId ? 'Producto actualizado' : 'Producto agregado';
         Swal.fire({
@@ -656,6 +662,16 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // Recargar vista
         cargarCategorias();
+    }
+
+    // Convertir archivo a base64
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
     }
 
     // Mostrar mensaje de bienvenida al cargar
