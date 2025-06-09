@@ -163,8 +163,15 @@
     }
     .productos-container {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: row;
         gap: 15px;
+        align-items: flex-start;
+        overflow-x: auto;
+        overflow-y: hidden;
+        width: 100%;
+        padding-bottom: 10px;
+        scrollbar-color: #bbb #eee;
+        scrollbar-width: thin;
     }
     .producto-card {
         width: 200px;
