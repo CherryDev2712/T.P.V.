@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Para formularios HTML
 
 // Servir solo la carpeta public/js como estática para archivos JS
-app.use('../public/js', express.static(path.join(__dirname, '../public/js')));
+app.use('/js', express.static(path.join(__dirname, '../public/js')));
 
 // Configuración de motor de plantillas (EJS)
 app.set('view engine', 'ejs'); // Motor EJS

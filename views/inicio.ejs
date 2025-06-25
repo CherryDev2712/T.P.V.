@@ -17,14 +17,12 @@
             </div>
         </div>
 
-        <!-- Botón flotante para agregar categorías -->
         <button class="btn btn-dark btn-content btn-categoria" data-bs-toggle="modal" data-bs-target="#categoriaModal" title="Agregar Categoría">
             <span>
                 <i class="bi bi-box-seam"></i>
             </span>
         </button>
 
-        <!-- Botón flotante para agregar productos -->
         <button class="btn btn-primary btn-content btn-producto" id="btnAgregarProducto" data-bs-toggle="modal" data-bs-target="#productoModal" style="display: none;" title="Agregar Producto">
             <span>
                 <i class="bi bi-basket"></i>
@@ -53,7 +51,7 @@
         </div>
     </div>
 
-    <!-- Modal para añadir/editar producto -->
+    <!-- Modal para añadir producto -->
     <div class="modal fade" id="productoModal" tabindex="-1" aria-labelledby="productoModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -82,7 +80,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="imagenProducto" class="form-label">Imagen del producto</label>
-                            <input type="file" class="form-control" id="imagenProducto" accept="image/*">
+                            <input type="file" class="form-control" id="imagenProducto" accept="image/*" required>
                         </div>
                         <div class="d-flex justify-content-between">
                             <button type="button" class="btn btn-danger" id="btnEliminarProducto" style="display: none;">Eliminar</button>
@@ -364,11 +362,12 @@
     });
 
     // Evento para agregar producto (id generado del nombre normalizado)
-    productoForm.addEventListener("submit", (event) => {
+    productoForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         const categoriaId = document.getElementById("categoriaProducto").value;
         const nombre = document.getElementById("nombreProducto").value.trim();
         const precio = parseFloat(document.getElementById("precioProducto").value);
+        const imagenInput = document.getElementById("imagenProducto");
 
         // Validaciones
         if (!nombre) {
@@ -407,11 +406,18 @@
             return;
         }
 
+        // Convertir imagen a base64 si hay archivo seleccionado
+        let imagenURL = "https://via.placeholder.com/150";
+        if (imagenInput.files && imagenInput.files[0]) {
+            imagenURL = await fileToBase64(imagenInput.files[0]);
+        }
+
         const producto = {
             id: productoId,
             categoriaId: categoriaId,
             nombre: nombre,
-            precio: precio
+            precio: precio,
+            imagenURL: imagenURL // Guardar la imagen
         };
 
         guardarProducto(producto);
@@ -428,6 +434,16 @@
             timerProgressBar: true
         });
     });
+
+    // Función para convertir archivo a base64
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
 
     // Eventos para cantidad
     decrementQuantityBtn.addEventListener("click", () => {
@@ -565,36 +581,42 @@
         card.classList.add("card");
         card.id = `producto-${producto.id}`;
         card.dataset.id = producto.id;
-        
-        // Asegurar que el precio sea número
+
         const precio = typeof producto.precio === 'string' ? 
                     parseFloat(producto.precio) : 
                     producto.precio;
 
+        const imagenHTML = producto.imagenURL
+            ? `<img src="${producto.imagenURL}" class="card-img-top" alt="${producto.nombre}">`
+            : `<img src="https://via.placeholder.com/150" class="card-img-top" alt="Sin imagen">`;
+
+        // Usa id únicos para los botones y clases Bootstrap
         card.innerHTML = `
+            ${imagenHTML}
             <div class="card-body">
                 <h5 class="card-title">${producto.nombre}</h5>
                 <p class="card-text">Precio: $${precio.toFixed(2)}</p>
-                <div class="card-buttons">
-                    <button class="btn-eliminar" data-id="${producto.id}">Eliminar</button>
-                    <button class="add-to-sidebar" data-id="${producto.id}">Agregar</button>
+                <div class="card-buttons d-flex justify-content-between">
+                    <button id="btn-eliminar-${producto.id}" class="btn btn-danger btn-sm" data-id="${producto.id}">Eliminar</button>
+                    <button id="btn-agregar-${producto.id}" class="btn btn-success btn-sm" data-id="${producto.id}">Agregar</button>
                 </div>
             </div>
         `;
-        
-        card.querySelector('.btn-eliminar').addEventListener('click', (e) => {
+
+        // Ahora selecciona por id
+        card.querySelector(`#btn-eliminar-${producto.id}`).addEventListener('click', (e) => {
             e.stopPropagation();
             eliminarProducto(producto.id, card);
         });
-        
-        card.querySelector('.add-to-sidebar').addEventListener('click', (e) => {
+
+        card.querySelector(`#btn-agregar-${producto.id}`).addEventListener('click', (e) => {
             e.stopPropagation();
             currentProduct = { ...producto, precio: parseFloat(producto.precio) };
             currentQuantity = 1;
             productQuantityInput.value = 1;
             cantidadModal.show();
         });
-        
+
         productoContainer.appendChild(card);
     }
 
