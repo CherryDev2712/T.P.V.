@@ -103,18 +103,20 @@
     body {
         margin: 0;
         padding: 0;
-        font-family: Arial, sans-serif;
-    }
-    .modal-backdrop {
-        display: none !important;
+        font-family: 'Rubik', Arial, sans-serif;
+        background: #181A20;
+        color: #EAEAEA;
     }
     .main-container {
         padding: 20px;
+        min-height: 100vh;
+        background: #181A20;
     }
     .content {
         padding: 20px;
         border-radius: 20px;
-        background-color: #f8f9fa;
+        background: #23272F;
+        box-shadow: 0 4px 32px rgba(0,0,0,0.25);
     }
     .categorias-container {
         display: flex;
@@ -134,15 +136,41 @@
         align-items: center;
         justify-content: center;
         z-index: 1000;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        border: none;
+    }
+    .btn-dark {
+        background: #23272F !important;
+        color: #00DFA2 !important;
+        transition: background 0.2s, color 0.2s;
+    }
+    .btn-dark:hover {
+        background: #00DFA2 !important;
+        color: #23272F !important;
+    }
+    .btn-primary {
+        background: #23272F !important;
+        color: #00A9FF !important;
+        transition: background 0.2s, color 0.2s;
+        border: none;
+    }
+    .btn-primary:hover {
+        background: #00A9FF !important;
+        color: #23272F !important;
     }
     .categoria-card {
         width: 100%;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        background: white;
+        border: 1.5px solid #393E46;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+        background: #23272F;
         padding: 15px;
         margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    .categoria-card:hover {
+        box-shadow: 0 5px 20px rgba(0,0,0,0.18);
+        border-color: #00DFA2;
     }
     .categoria-header {
         display: flex;
@@ -150,12 +178,13 @@
         align-items: center;
         margin-bottom: 15px;
         padding-bottom: 10px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #393E46;
     }
     .categoria-title {
         font-size: 1.5rem;
         margin: 0;
-        color: #333;
+        color: #00DFA2;
+        font-weight: 600;
     }
     .categoria-actions {
         display: flex;
@@ -170,19 +199,20 @@
         overflow-y: hidden;
         width: 100%;
         padding-bottom: 10px;
-        scrollbar-color: #bbb #eee;
+        scrollbar-color: #393E46 #23272F;
         scrollbar-width: thin;
     }
     .producto-card {
         width: 200px;
-        border: 1px solid #ddd;
+        border: 1.5px solid #393E46;
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+        background: #23272F;
         transition: transform 0.2s;
     }
     .producto-card:hover {
-        transform: translateY(-5px);
+        box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+        border-color: #00DFA2;
     }
     .producto-img {
         height: 120px;
@@ -190,6 +220,7 @@
         object-fit: cover;
         border-top-left-radius: 8px;
         border-top-right-radius: 8px;
+        background: #181A20;
     }
     .producto-body {
         padding: 10px;
@@ -197,10 +228,10 @@
     .producto-title {
         font-size: 1rem;
         margin-bottom: 5px;
-        color: #333;
+        color: #EAEAEA;
     }
     .producto-precio {
-        color: #28a745;
+        color: #00DFA2;
         font-weight: bold;
         margin-bottom: 10px;
     }
@@ -208,20 +239,70 @@
         display: flex;
         justify-content: space-between;
     }
-    .btn-delete {
-        background-color: #dc3545;
-        color: white;
+    .btn-info {
+        background-color: #00A9FF !important;
+        color: #181A20 !important;
         border: none;
         padding: 5px 10px;
         border-radius: 4px;
         cursor: pointer;
+        margin-right: 5px;
+        transition: background 0.2s;
     }
-    .btn-delete:hover {
-        background-color: #c82333;
+    .btn-info:hover {
+        background-color: #0077b6 !important;
+        color: #fff !important;
+    }
+    .btn-danger, .btn-delete {
+        background-color: #FF4C60 !important;
+        color: #fff !important;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .btn-danger:hover, .btn-delete:hover {
+        background-color: #D7263D !important;
     }
     h1 {
-        color: #333;
+        color: #EAEAEA;
         margin-bottom: 20px;
+    }
+    /* Modales */
+    .modal-content {
+        background: #23272F;
+        color: #EAEAEA;
+        border-radius: 12px;
+        border: 1px solid #393E46;
+    }
+    .modal-header, .modal-footer {
+        border: none;
+    }
+    .form-control, .form-select {
+        background: #181A20;
+        color: #EAEAEA;
+        border: 1px solid #393E46;
+    }
+    .form-control:focus, .form-select:focus {
+        background: #23272F;
+        color: #fff;
+        border-color: #00DFA2;
+        box-shadow: none;
+    }
+    .btn-close {
+        filter: invert(1);
+    }
+    .alert-info {
+        background: #23272F;
+        color: #00A9FF;
+        border: 1px solid #00A9FF;
+    }
+    .modal-backdrop {
+        display: none;
+    }
+    .modal-dialog {
+        box-shadow: 0 80px 32px rgba(0,0,0,0.45);
     }
 </style>
 
@@ -249,7 +330,8 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
 
         const nombre = document.getElementById("nombreCategoria").value.trim();
-        const categoriaId = nombre.toLowerCase().replace(/\s+/g, '-');
+        const categoriaIdOriginal = document.getElementById("categoriaId").value; // id original (oculto)
+        const categoriaIdNuevo = nombre.toLowerCase().replace(/\s+/g, '-');
 
         if (!nombre) {
             Swal.fire({
@@ -261,31 +343,57 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Control de unicidad de categoría
         let categorias = JSON.parse(localStorage.getItem('categorias')) || [];
-        const categoriaExistente = categorias.find(c => c.id === categoriaId);
+        const categoriaExistente = categorias.find(c => c.id === categoriaIdNuevo);
 
-        // Si es nueva (no edición) y ya existe, alerta
-        if (!document.getElementById("categoriaId").value && categoriaExistente) {
-            Swal.fire({
-                title: 'Nombre ocupado',
-                text: 'Ya existe una categoría con ese nombre. Por favor elige otro.',
-                icon: 'warning',
-                confirmButtonText: 'Entendido'
-            });
-            return;
+        // Si es edición
+        if (categoriaIdOriginal) {
+            // Si el id cambió y ya existe otra categoría con ese id, error
+            if (categoriaIdOriginal !== categoriaIdNuevo && categoriaExistente) {
+                Swal.fire({
+                    title: 'Nombre ocupado',
+                    text: 'Ya existe una categoría con ese nombre. Por favor elige otro.',
+                    icon: 'warning',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+
+            // Actualizar categoría
+            const index = categorias.findIndex(c => c.id === categoriaIdOriginal);
+            if (index >= 0) {
+                categorias[index] = { id: categoriaIdNuevo, nombre: nombre };
+            }
+
+            // Si el id cambió, actualiza los productos relacionados
+            if (categoriaIdOriginal !== categoriaIdNuevo) {
+                let productos = JSON.parse(localStorage.getItem('productos')) || [];
+                productos.forEach(p => {
+                    if (p.categoriaId === categoriaIdOriginal) {
+                        p.categoriaId = categoriaIdNuevo;
+                    }
+                });
+                localStorage.setItem('productos', JSON.stringify(productos));
+            }
+        } else {
+            // Si es nueva y ya existe, error
+            if (categoriaExistente) {
+                Swal.fire({
+                    title: 'Nombre ocupado',
+                    text: 'Ya existe una categoría con ese nombre. Por favor elige otro.',
+                    icon: 'warning',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+            categorias.push({ id: categoriaIdNuevo, nombre: nombre });
         }
 
-        const categoria = {
-            id: categoriaId,
-            nombre: nombre
-        };
-
-        guardarCategoria(categoria);
+        localStorage.setItem('categorias', JSON.stringify(categorias));
         categoriaForm.reset();
         categoriaModal.hide();
 
-        const message = document.getElementById("categoriaId").value ? 'Categoría actualizada' : 'Categoría agregada';
+        const message = categoriaIdOriginal ? 'Categoría actualizada' : 'Categoría agregada';
         Swal.fire({
             title: '¡Éxito!',
             text: `${message} correctamente`,
@@ -294,6 +402,8 @@ document.addEventListener("DOMContentLoaded", () => {
             timerProgressBar: true,
             showConfirmButton: false
         });
+
+        cargarCategorias();
     });
 
     // Evento para eliminar categoría
