@@ -20,4 +20,10 @@ router.get('/ventas', (req, res) => {
   )
 })
 
+router.get('/clientes', (req, res) => {
+  res.render('clientes', 
+    {titulo: 'TPV | clientes'}
+  )
+})
+
 export default router;
