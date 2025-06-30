@@ -28,12 +28,12 @@
         </section>
     </main>
 
-    <!-- Modal para añadir/editar categoría -->
+    <!-- Modal para añadir/editar categoría (modificado para editar un <li>) -->
     <div class="modal fade" id="categoriaModal" tabindex="-1" aria-labelledby="categoriaModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="categoriaModalLabel">Añadir Categoría</h5>
+                    <h5 class="modal-title" id="categoriaModalLabel">Editar Categoría</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -424,6 +424,13 @@ document.addEventListener("DOMContentLoaded", () => {
             showConfirmButton: false
         });
 
+        // Actualizar título si la categoría editada es la seleccionada actualmente
+        if (categoriaSeleccionada === categoriaIdOriginal || categoriaSeleccionada === categoriaIdNuevo) {
+            document.getElementById('tituloCategoriaSeleccionada').textContent = nombre;
+            // Si el id cambió, actualiza la selección
+            categoriaSeleccionada = categoriaIdNuevo;
+        }
+
         cargarCategorias();
     });
 
@@ -443,7 +450,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (result.isConfirmed) {
                 eliminarCategoria(editingCategoria.id);
                 categoriaModal.hide();
-                
+
+                // Limpia el formulario y oculta el botón eliminar para evitar que quede visible tras eliminar
+                categoriaForm.reset();
+                btnEliminarCategoria.style.display = 'none';
+
                 Swal.fire({
                     title: '¡Eliminada!',
                     text: 'La categoría y sus productos han sido eliminados',
@@ -876,10 +887,61 @@ document.addEventListener("DOMContentLoaded", () => {
 
         categorias.forEach((cat, idx) => {
             const li = document.createElement('li');
-            li.className = 'list-group-item list-group-item-action' + (categoriaSeleccionada === cat.id || (!categoriaSeleccionada && idx === 0) ? ' active' : '');
-            li.textContent = cat.nombre;
+            li.className = 'list-group-item d-flex justify-content-between align-items-center list-group-item-action' + (categoriaSeleccionada === cat.id || (!categoriaSeleccionada && idx === 0) ? ' active' : '');
             li.style.cursor = 'pointer';
-            li.onclick = () => seleccionarCategoria(cat.id);
+
+            // Nombre de la categoría (clic para seleccionar)
+            const span = document.createElement('span');
+            span.textContent = cat.nombre;
+            span.onclick = () => seleccionarCategoria(cat.id);
+
+            // Botones editar y borrar
+            const btnGroup = document.createElement('div');
+            btnGroup.className = 'btn-group btn-group-sm';
+
+            const btnEdit = document.createElement('button');
+            btnEdit.className = 'btn btn-info';
+            btnEdit.innerHTML = '<i class="bi bi-pencil"></i>';
+            btnEdit.onclick = (e) => {
+                e.stopPropagation();
+                editarCategoria(cat.id);
+            };
+
+            const btnDelete = document.createElement('button');
+            btnDelete.className = 'btn btn-danger';
+            btnDelete.innerHTML = '<i class="bi bi-trash"></i>';
+            btnDelete.onclick = (e) => {
+                e.stopPropagation();
+                Swal.fire({
+                    title: '¿Eliminar categoría?',
+                    html: `¿Estás seguro de eliminar la categoría <strong>${cat.nombre}</strong> y todos sus productos?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        eliminarCategoria(cat.id);
+                        Swal.fire({
+                            title: '¡Eliminada!',
+                            text: 'La categoría y sus productos han sido eliminados',
+                            icon: 'success',
+                            timer: 1500,
+                            timerProgressBar: true
+                        });
+                    }
+                });
+            };
+
+            btnGroup.appendChild(btnEdit);
+            btnGroup.appendChild(btnDelete);
+
+            li.appendChild(span);
+            li.appendChild(btnGroup);
+
             sidebar.appendChild(li);
         });
 
@@ -971,5 +1033,15 @@ document.addEventListener("DOMContentLoaded", () => {
             contenedor.appendChild(card);
         });
     }
+
+    document.querySelector('[data-bs-target="#categoriaModal"]').addEventListener('click', () => {
+        // Limpiar formulario y estado
+        categoriaForm.reset();
+        document.getElementById("categoriaId").value = "";
+        document.getElementById("nombreCategoria").value = "";
+        btnEliminarCategoria.style.display = 'none';
+        editingCategoria = null;
+        document.getElementById("categoriaModalLabel").textContent = "Nueva Categoría";
+    });
 });
 </script>
