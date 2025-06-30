@@ -29,5 +29,3 @@ app.use('/', routes);
 app.listen(PORT, () => {
   console.log(`Servidor test ejecutando en http://localhost:${PORT}`);
 });
-
-// ho0la
