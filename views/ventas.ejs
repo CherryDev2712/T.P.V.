@@ -1,5 +1,15 @@
 <!DOCTYPE html>
 <%- include('load/head') %>
+<style>
+    html body {
+        background-color: #181A20;
+        color: #FFFFFF;
+    }
+
+    .table-responsive {
+        border-radius: 10px;
+    }
+</style>
 <body>
     <%- include('load/nav') %>
     <main class="container mt-4">
@@ -9,77 +19,73 @@
             <table class="table table-striped table-hover">
                 <thead class="table-dark">
                     <tr>
-                        <th>Fecha/Hora</th>
+                        <th>Fecha</th>
                         <th>Cliente</th>
-                        <th>Total</th>
                         <th>Tipo Pago</th>
-                        <th>Plataforma</th>
+                        <th>Monto Recibido</th>
+                        <th>Cambio</th>
+                        <th>Total</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="ventasTableBody">
-                    <!-- Las ventas se cargarán aquí -->
+                <tbody id="ventasTableBody" class="table-body-1">
+                    <!-- Ejemplo de fila -->
+                    <tr>
+
+                    </tr>
                 </tbody>
             </table>
         </div>
     </main>
 
     <!-- Modal para ver detalles de venta -->
-    <div class="modal fade" id="detalleVentaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="detalleVentaModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Detalles de Venta</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Detalles Completos de la Venta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row mb-3">
+                    <!-- Datos Principales -->
+                    <div class="row mb-4">
                         <div class="col-md-6">
-                            <p><strong>Fecha:</strong> <span id="detalleFecha"></span></p>
-                        </div>
-                        <div class="col-md-6">
+                            <p><strong>Fecha y Hora:</strong> <span id="detalleFecha"></span></p>
                             <p><strong>Cliente:</strong> <span id="detalleCliente"></span></p>
+                            <p><strong>Tipo de Pago:</strong> <span id="detalleTipoPago"></span></p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Total:</strong> $<span id="detalleTotal"></span></p>
+                            <p><strong>Monto Recibido:</strong> $<span id="detalleMontoRecibido"></span></p>
+                            <p><strong>Cambio:</strong> $<span id="detalleCambio"></span></p>
                         </div>
-                        <div class="col-md-6">
-                            <p><strong>Tipo de pago:</strong> <span id="detalleTipoPago"></span></p>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>Plataforma:</strong> <span id="detallePlataforma"></span></p>
+                        <div class="col-12">
+                            <p><strong>Numero de Telefono:</strong> <span id="detalleNotas"></span></p>
                         </div>
                     </div>
-                    <hr>
-                    <h6>Productos vendidos:</h6>
+
+                    <!-- Tabla de Productos -->
+                    <h6>Productos Comprados:</h6>
                     <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
+                        <table class="table table-bordered">
+                            <thead class="table-light">
                                 <tr>
                                     <th>Producto</th>
-                                    <th>Cantidad</th>
                                     <th>Precio Unitario</th>
+                                    <th>Cantidad</th>
                                     <th>Subtotal</th>
                                 </tr>
                             </thead>
                             <tbody id="detalleProductosBody">
-                                <!-- Los productos de la venta aparecerán aquí -->
+                                <!-- Los productos se cargarán aquí -->
                             </tbody>
                         </table>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="imprimirTicketBtn">
-                        <i class="fas fa-print"></i> Imprimir Ticket
-                    </button>
-                    <button type="button" class="btn btn-danger" id="eliminarVentaBtn">Eliminar Venta</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Contenedor oculto para el ticket de impresión -->
+    <!-- Ticket de impresión (actualizado) -->
     <div id="ticketContainer" style="display: none;">
         <div class="ticket">
             <div class="ticket-header text-center">
@@ -91,6 +97,8 @@
                 <p><strong>Cliente:</strong> <span id="ticketCliente"></span></p>
                 <p><strong>Tipo de pago:</strong> <span id="ticketTipoPago"></span></p>
                 <p><strong>Plataforma:</strong> <span id="ticketPlataforma"></span></p>
+                <p><strong>Monto Recibido:</strong> $<span id="ticketMontoRecibido"></span></p>
+                <p><strong>Cambio:</strong> $<span id="ticketCambio"></span></p>
             </div>
             <hr>
             <table class="ticket-products">
@@ -102,279 +110,304 @@
                         <th>Total</th>
                     </tr>
                 </thead>
-                <tbody id="ticketProductosBody">
-                    <!-- Productos del ticket -->
-                </tbody>
+                <tbody id="ticketProductosBody"></tbody>
             </table>
             <hr>
             <div class="ticket-total text-end">
                 <h5>Total: $<span id="ticketTotal"></span></h5>
             </div>
             <div class="ticket-footer text-center">
+                <p id="ticketNotas"></p>
                 <p>¡Gracias por su compra!</p>
                 <p id="ticketCodigo"></p>
             </div>
         </div>
     </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+    <!-- sweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const ventasTableBody = document.getElementById("ventasTableBody");
-            const detalleVentaModal = new bootstrap.Modal(document.getElementById('detalleVentaModal'));
-            let ventaActual = null;
-            let ventaActualIndex = null;
-            
+            const detalleVentaModal = new bootstrap.Modal('#detalleVentaModal');
+            const detalleVentaModalTitle = document.querySelector('#detalleVentaModal .modal-title');
+
+            // Mostrar mensaje de bienvenida
+            Swal.fire({
+                title: 'Historial de Ventas',
+                text: 'Cargando registros de ventas...',
+                icon: 'info',
+                timer: 1500,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+
             // Cargar ventas al iniciar
             cargarVentas();
 
             function cargarVentas() {
                 const ventas = JSON.parse(localStorage.getItem('ventas')) || [];
-                ventasTableBody.innerHTML = '';
                 
                 if (ventas.length === 0) {
-                    ventasTableBody.innerHTML = '<tr><td colspan="6" class="text-center">No hay ventas registradas</td></tr>';
+                    ventasTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <div class="alert alert-info">
+                                    No hay registros de ventas disponibles
+                                </div>
+                            </td>
+                        </tr>
+                    `;
                     return;
                 }
+
+                ventasTableBody.innerHTML = '';
                 
                 // Ordenar ventas por fecha (más reciente primero)
-                ventas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-                
-                ventas.forEach((venta, index) => {
-                    const row = document.createElement("tr");
+                ventas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).forEach((venta, index) => {
+                    const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${formatearFecha(venta.fecha)}</td>
-                        <td>${venta.cliente || 'Sin nombre'}</td>
-                        <td>$${venta.total.toFixed(2)}</td>
+                        <td>${venta.cliente ?? 'Consumidor Final'}</td>
                         <td>${venta.tipoPago}</td>
-                        <td>${venta.plataforma || 'Local'}</td>
+                        <td>$${venta.montoRecibido?.toFixed(2) || '0.00'}</td>
+                        <td>$${venta.cambio?.toFixed(2) || '0.00'}</td>
+                        <td>$${venta.total?.toFixed(2) || '0.00'}</td>
                         <td>
-                            <button class="btn btn-sm btn-info ver-detalle-btn me-2" data-index="${index}">
-                                <i class="fas fa-eye"></i> Detalle
-                            </button>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-primary ver-detalle" data-index="${index}">
+                                    <i class="fas fa-eye"></i> Ver
+                                </button>
+                                <button class="btn btn-sm btn-success imprimir-ticket" data-index="${index}">
+                                    <i class="fas fa-print"></i> Ticket
+                                </button>
+                                <button class="btn btn-sm btn-danger eliminar-venta" data-index="${index}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </td>
                     `;
                     ventasTableBody.appendChild(row);
-                });
-                
-                // Agregar eventos a los botones
-                document.querySelectorAll('.ver-detalle-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        mostrarDetalleVenta(btn.dataset.index);
-                    });
+
+                    // Asignar eventos a los botones de esta fila
+                    row.querySelector('.ver-detalle').addEventListener('click', () => mostrarDetalleVenta(index));
+                    row.querySelector('.imprimir-ticket').addEventListener('click', () => imprimirTicket(index));
+                    row.querySelector('.eliminar-venta').addEventListener('click', (e) => confirmarEliminarVenta(e, index));
                 });
             }
 
             function mostrarDetalleVenta(index) {
                 const ventas = JSON.parse(localStorage.getItem('ventas')) || [];
-                ventaActual = ventas[index];
-                ventaActualIndex = index;
-                
-                if (!ventaActual) return;
-                
-                // Llenar datos básicos
-                document.getElementById("detalleFecha").textContent = formatearFecha(ventaActual.fecha, true);
-                document.getElementById("detalleCliente").textContent = ventaActual.cliente || 'Sin nombre';
-                document.getElementById("detalleTotal").textContent = ventaActual.total.toFixed(2);
-                document.getElementById("detalleTipoPago").textContent = ventaActual.tipoPago;
-                document.getElementById("detallePlataforma").textContent = ventaActual.plataforma || 'Local';
-                
-                // Llenar tabla de productos
-                const productosBody = document.getElementById("detalleProductosBody");
-                productosBody.innerHTML = '';
-                
-                ventaActual.productos.forEach(producto => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
+                const venta = ventas[index];
+
+                if (!venta) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'No se encontró la venta solicitada',
+                        icon: 'error',
+                        confirmButtonText: 'Entendido'
+                    });
+                    return;
+                }
+
+                // Actualizar título del modal con ID de venta
+                detalleVentaModalTitle.textContent = `Detalles de Venta #${index + 1}`;
+
+                // Datos principales
+                document.getElementById('detalleFecha').textContent = formatearFecha(venta.fecha, true);
+                document.getElementById('detalleCliente').textContent = venta.cliente || 'Consumidor Final';
+                document.getElementById('detalleTipoPago').textContent = venta.tipoPago;
+                document.getElementById('detalleMontoRecibido').textContent = venta.montoRecibido?.toFixed(2) || '0.00';
+                document.getElementById('detalleCambio').textContent = venta.cambio?.toFixed(2) || '0.00';
+                document.getElementById('detalleNotas').textContent = venta.notas || 'Sin notas adicionales';
+
+                // Productos
+                const productosBody = document.getElementById('detalleProductosBody');
+                productosBody.innerHTML = venta.productos.map(producto => `
+                    <tr>
                         <td>${producto.nombre}</td>
+                        <td>$${producto.precioUnitario?.toFixed(2) || producto.precio?.toFixed(2) || '0.00'}</td>
                         <td>${producto.cantidad}</td>
-                        <td>$${producto.precioUnitario.toFixed(2)}</td>
-                        <td>$${(producto.precioUnitario * producto.cantidad).toFixed(2)}</td>
-                    `;
-                    productosBody.appendChild(row);
-                });
-                
-                // Configurar botón eliminar en el modal
-                const eliminarVentaBtn = document.getElementById("eliminarVentaBtn");
-                eliminarVentaBtn.onclick = () => {
-                    if (confirm('¿Estás seguro de eliminar esta venta permanentemente?')) {
-                        eliminarVenta(ventaActualIndex);
-                        detalleVentaModal.hide();
-                    }
-                };
-                
-                // Configurar botón imprimir ticket
-                const imprimirTicketBtn = document.getElementById("imprimirTicketBtn");
-                imprimirTicketBtn.onclick = () => {
-                    prepararTicketParaImpresion(ventaActual);
-                };
-                
+                        <td>$${(producto.precioUnitario * producto.cantidad)?.toFixed(2) || '0.00'}</td>
+                    </tr>
+                `).join('');
+
                 detalleVentaModal.show();
             }
 
-            function prepararTicketParaImpresion(venta) {
-                // Llenar datos del ticket
-                document.getElementById("ticketFecha").textContent = formatearFecha(venta.fecha, true);
-                document.getElementById("ticketCliente").textContent = venta.cliente || 'Sin nombre';
-                document.getElementById("ticketTipoPago").textContent = venta.tipoPago;
-                document.getElementById("ticketPlataforma").textContent = venta.plataforma || 'Local';
-                document.getElementById("ticketTotal").textContent = venta.total.toFixed(2);
+            function confirmarEliminarVenta(event, index) {
+                event.stopPropagation();
                 
-                // Generar un código único para el ticket
-                const codigoTicket = 'TKT-' + Date.now().toString().slice(-6);
-                document.getElementById("ticketCodigo").textContent = `Ticket #${codigoTicket}`;
+                const ventas = JSON.parse(localStorage.getItem('ventas')) || [];
+                const venta = ventas[index];
                 
-                // Llenar productos del ticket
-                const ticketProductosBody = document.getElementById("ticketProductosBody");
-                ticketProductosBody.innerHTML = '';
-                
-                venta.productos.forEach(producto => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${producto.nombre}</td>
-                        <td>${producto.cantidad}</td>
-                        <td>$${producto.precioUnitario.toFixed(2)}</td>
-                        <td>$${(producto.precioUnitario * producto.cantidad).toFixed(2)}</td>
-                    `;
-                    ticketProductosBody.appendChild(row);
-                });
-                
-                // Imprimir el ticket
-                imprimirTicket();
-            }
+                if (!venta) return;
 
-            function imprimirTicket() {
-                const ticketContainer = document.getElementById("ticketContainer");
-                const ventanaImpresion = window.open('', '_blank');
-                
-                // Estilos para el ticket
-                const estilos = `
-                    <style>
-                        body {
-                            font-family: Arial, sans-serif;
-                            font-size: 12px;
-                            margin: 0;
-                            padding: 10px;
-                        }
-                        .ticket {
-                            width: 80mm;
-                            max-width: 100%;
-                            margin: 0 auto;
-                            padding: 10px;
-                        }
-                        .ticket-header {
-                            margin-bottom: 10px;
-                        }
-                        .ticket-header h4 {
-                            margin: 0;
-                            font-size: 16px;
-                        }
-                        .ticket-info p {
-                            margin: 5px 0;
-                        }
-                        .ticket-products {
-                            width: 100%;
-                            border-collapse: collapse;
-                            margin: 10px 0;
-                        }
-                        .ticket-products th, .ticket-products td {
-                            padding: 5px;
-                            text-align: left;
-                            border-bottom: 1px dashed #ccc;
-                        }
-                        .ticket-products th {
-                            border-bottom: 1px solid #000;
-                        }
-                        .ticket-total h5 {
-                            margin: 10px 0;
-                        }
-                        .ticket-footer {
-                            margin-top: 15px;
-                            font-size: 10px;
-                        }
-                        hr {
-                            border: none;
-                            border-top: 1px dashed #000;
-                            margin: 10px 0;
-                        }
-                        @media print {
-                            @page {
-                                size: auto;
-                                margin: 0;
-                            }
-                            body {
-                                padding: 0;
-                            }
-                        }
-                    </style>
-                `;
-                
-                ventanaImpresion.document.write(`
-                    <html>
-                        <head>
-                            <title>Ticket de Venta</title>
-                            ${estilos}
-                        </head>
-                        <body>
-                            ${ticketContainer.innerHTML}
-                            <script>
-                                window.onload = function() {
-                                    window.print();
-                                    setTimeout(function() {
-                                        window.close();
-                                    }, 100);
-                                };
-                            <\/script>
-                        </body>
-                    </html>
-                `);
-                ventanaImpresion.document.close();
+                Swal.fire({
+                    title: '¿Eliminar venta?',
+                    html: `¿Estás seguro de eliminar la venta del <strong>${formatearFecha(venta.fecha)}</strong> por <strong>$${venta.total?.toFixed(2)}</strong>?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        eliminarVenta(index);
+                    }
+                });
             }
 
             function eliminarVenta(index) {
-                let ventas = JSON.parse(localStorage.getItem('ventas')) || [];
+                const ventas = JSON.parse(localStorage.getItem('ventas')) || [];
+                
                 if (index >= 0 && index < ventas.length) {
                     ventas.splice(index, 1);
                     localStorage.setItem('ventas', JSON.stringify(ventas));
-                    cargarVentas(); // Recargar la tabla
                     
-                    // Mostrar notificación de éxito
-                    alert('Venta eliminada correctamente');
+                    Swal.fire({
+                        title: '¡Eliminada!',
+                        text: 'La venta ha sido eliminada del historial',
+                        icon: 'success',
+                        timer: 1500,
+                        timerProgressBar: true
+                    });
+                    
+                    cargarVentas();
                 }
+            }
+
+            function imprimirTicket(index) {
+                const ventas = JSON.parse(localStorage.getItem('ventas')) || [];
+                const venta = ventas[index];
+                
+                if (!venta) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'No se encontró la venta para generar el ticket',
+                        icon: 'error',
+                        confirmButtonText: 'Entendido'
+                    });
+                    return;
+                }
+
+                // Llenar datos del ticket
+                document.getElementById('ticketFecha').textContent = formatearFecha(venta.fecha, true);
+                document.getElementById('ticketCliente').textContent = venta.cliente || 'Consumidor Final';
+                document.getElementById('ticketTipoPago').textContent = venta.tipoPago;
+                document.getElementById('ticketMontoRecibido').textContent = venta.montoRecibido?.toFixed(2) || '0.00';
+                document.getElementById('ticketCambio').textContent = venta.cambio?.toFixed(2) || '0.00';
+                document.getElementById('ticketTotal').textContent = venta.total?.toFixed(2) || '0.00';
+                document.getElementById('ticketNotas').textContent = venta.notas || '';
+                document.getElementById('ticketCodigo').textContent = `Venta #${index + 1}`;
+
+                // Llenar productos del ticket
+                const ticketProductosBody = document.getElementById('ticketProductosBody');
+                ticketProductosBody.innerHTML = venta.productos.map(producto => `
+                    <tr>
+                        <td>${producto.nombre}</td>
+                        <td>${producto.cantidad}</td>
+                        <td>$${producto.precioUnitario?.toFixed(2) || producto.precio?.toFixed(2) || '0.00'}</td>
+                        <td>$${(producto.precioUnitario * producto.cantidad)?.toFixed(2) || '0.00'}</td>
+                    </tr>
+                `).join('');
+
+                // Mostrar confirmación antes de imprimir
+                Swal.fire({
+                    title: 'Imprimir Ticket',
+                    html: `¿Deseas imprimir el ticket de la venta del <strong>${formatearFecha(venta.fecha)}</strong>?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="fas fa-print"></i> Imprimir',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Lógica para imprimir el ticket
+                        const ticketContainer = document.getElementById('ticketContainer');
+                        ticketContainer.style.display = 'block';
+                        
+                        // Usar librería de impresión o window.print()
+                        setTimeout(() => {
+                            window.print();
+                            ticketContainer.style.display = 'none';
+                        }, 200);
+                        
+                        Swal.fire({
+                            title: 'Ticket enviado a impresión',
+                            icon: 'success',
+                            timer: 1500,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        });
+                    }
+                });
             }
 
             function formatearFecha(fechaString, conHora = false) {
                 const fecha = new Date(fechaString);
-                const opciones = { 
-                    year: 'numeric', 
-                    month: '2-digit', 
-                    day: '2-digit',
-                    hour: conHora ? '2-digit' : undefined,
-                    minute: conHora ? '2-digit' : undefined,
-                    hour12: true
+                const opciones = {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
                 };
-                return fecha.toLocaleString('es-ES', opciones);
+                
+                if (conHora) {
+                    opciones.hour = '2-digit';
+                    opciones.minute = '2-digit';
+                }
+                
+                return fecha.toLocaleString('es-MX', opciones);
+            }
+
+            // Opcional: Botón para eliminar todas las ventas
+            const btnEliminarTodo = document.createElement('button');
+            btnEliminarTodo.className = 'btn btn-danger mb-3';
+            btnEliminarTodo.innerHTML = '<i class="fas fa-trash"></i> Eliminar Todo el Historial';
+            btnEliminarTodo.addEventListener('click', confirmarEliminarTodo);
+            document.querySelector('main').insertBefore(btnEliminarTodo, document.querySelector('.table-responsive'));
+
+            function confirmarEliminarTodo() {
+                const ventas = JSON.parse(localStorage.getItem('ventas')) || [];
+                
+                if (ventas.length === 0) {
+                    Swal.fire({
+                        title: 'No hay ventas',
+                        text: 'El historial de ventas ya está vacío',
+                        icon: 'info',
+                        confirmButtonText: 'Entendido'
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: '¿Eliminar todo el historial?',
+                    html: `¿Estás seguro de eliminar todas las <strong>${ventas.length}</strong> ventas registradas?<br><br>Esta acción no se puede deshacer.`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar todo',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        localStorage.removeItem('ventas');
+                        cargarVentas();
+                        
+                        Swal.fire({
+                            title: '¡Historial eliminado!',
+                            text: 'Todas las ventas han sido eliminadas',
+                            icon: 'success',
+                            timer: 1500,
+                            timerProgressBar: true
+                        });
+                    }
+                });
             }
         });
     </script>
-    
-    <!-- Font Awesome para iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <style>
-        /* Estilos adicionales para mejorar la visualización */
-        .table th {
-            white-space: nowrap;
-        }
-        .table td {
-            vertical-align: middle;
-        }
-        .btn-sm {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.875rem;
-        }
-    </style>
 </body>
 </html>

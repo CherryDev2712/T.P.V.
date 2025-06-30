@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <%- include('load/head') %>
+  <style>
+    html body {
+        background-color: #181A20;
+        color: #FFFFFF;
+    }
+  </style>
+</head>
+<body>
+  <%- include('load/nav') %>
+
+  <main class="container">
+    <br>
+    <h1>Clientes</h1><hr>
+    <table id="tabla-clientes" class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nombre del Cliente</th>
+          <th>Fecha</th>
+          <th>Numero de telefono</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Las filas se insertarán dinámicamente aquí -->
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabla = document.querySelector('#tabla-clientes tbody');
+      const ventasJSON = localStorage.getItem('ventas');
+
+      if (!ventasJSON) {
+        tabla.innerHTML = '<tr><td colspan="4">No hay ventas registradas.</td></tr>';
+        return;
+      }
+
+      let ventas;
+      try {
+        ventas = JSON.parse(ventasJSON);
+      } catch (error) {
+        console.error('Error al parsear las ventas desde localStorage:', error);
+        tabla.innerHTML = '<tr><td colspan="4">Error al cargar los datos de ventas.</td></tr>';
+        return;
+      }
+
+      if (!Array.isArray(ventas) || ventas.length === 0) {
+        tabla.innerHTML = '<tr><td colspan="4">No hay ventas registradas.</td></tr>';
+        return;
+      }
+
+      ventas.forEach((venta, index) => {
+        const fila = document.createElement('tr');
+        const fecha = venta.fecha ? new Date(venta.fecha).toLocaleDateString('es-MX') : 'Sin Numero';
+        const notas = venta.notas || 'Sin Numero';
+        fila.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${venta.cliente || 'Sin nombre'}</td>
+          <td>${fecha}</td>
+          <td>${notas}</td>
+        `;
+        tabla.appendChild(fila);
+      });
+    });
+
+  </script>
+</body>
+</html>
