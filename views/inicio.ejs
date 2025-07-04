@@ -6,7 +6,7 @@
         <%- include('load/side-bar') %>
         <div class="content">
             <div class="content-header">
-                <h3 class="content-header-title">Productos</h3>
+                <h3 class="content-header-title">Categorias</h3>
             </div>                 
             <div class="categorias-container" id="categorias">
                 <!-- Las categorías se agregarán aquí dinámicamente -->
@@ -17,14 +17,12 @@
             </div>
         </div>
 
-        <!-- Botón flotante para agregar categorías -->
         <button class="btn btn-dark btn-content btn-categoria" data-bs-toggle="modal" data-bs-target="#categoriaModal" title="Agregar Categoría">
             <span>
                 <i class="bi bi-box-seam"></i>
             </span>
         </button>
 
-        <!-- Botón flotante para agregar productos -->
         <button class="btn btn-primary btn-content btn-producto" id="btnAgregarProducto" data-bs-toggle="modal" data-bs-target="#productoModal" style="display: none;" title="Agregar Producto">
             <span>
                 <i class="bi bi-basket"></i>
@@ -53,7 +51,7 @@
         </div>
     </div>
 
-    <!-- Modal para añadir/editar producto -->
+    <!-- Modal para añadir producto -->
     <div class="modal fade" id="productoModal" tabindex="-1" aria-labelledby="productoModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -82,7 +80,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="imagenProducto" class="form-label">Imagen del producto</label>
-                            <input type="file" class="form-control" id="imagenProducto" accept="image/*">
+                            <input type="file" class="form-control" id="imagenProducto" accept="image/*" required>
                         </div>
                         <div class="d-flex justify-content-between">
                             <button type="button" class="btn btn-danger" id="btnEliminarProducto" style="display: none;">Eliminar</button>
@@ -127,18 +125,21 @@
         padding: 0;
         display: flex;
         flex-direction: column;
-        font-family: Arial, sans-serif;
+        font-family: 'Rubik', Arial, sans-serif;
+        background: #181A20;
+        color: #EAEAEA;
     }
     .main-container {
         display: flex;
         height: calc(100vh - 60px);
+        background: #181A20;
     }
     .content {
         flex-grow: 1;
         padding: 20px;
         overflow-y: auto;
-        border-radius: 20px;
-        background-color: #f8f9fa;
+        background: #23272F;
+        box-shadow: 0 4px 32px rgba(0,0,0,0.25);
     }
     .categorias-container {
         display: flex;
@@ -163,34 +164,52 @@
         align-items: center;
         justify-content: center;
         z-index: 1000;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        border: none;
     }
     .btn-categoria {
         left: 17px;
         bottom: 17px;
+        background: #23272F;
+        color: #00DFA2;
+        transition: background 0.2s, color 0.2s;
+    }
+    .btn-categoria:hover {
+        background: #00DFA2;
+        color: #23272F;
     }
     .btn-producto {
         left: 80px;
         bottom: 17px;
+        background: #23272F;
+        color: #00A9FF;
+        transition: background 0.2s, color 0.2s;
+    }
+    .btn-producto:hover {
+        background: #00A9FF;
+        color: #23272F;
     }
     .card {
         margin: 10px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        background: white;
-        transition: transform 0.2s;
+        border: 1px solid #23272F;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+        background: #23272F;
+        transition: transform 0.2s, box-shadow 0.2s;
         width: 18rem;
         cursor: pointer;
         display: inline-block;
     }
     .card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-5px) scale(1.03);
+        box-shadow: 0 6px 24px rgba(0,0,0,0.25);
     }
     .card-img-top {
         height: 180px;
         object-fit: cover;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        background: #181A20;
     }
     .card-body {
         padding: 15px;
@@ -198,35 +217,39 @@
     .card-title {
         font-size: 1.2rem;
         margin-bottom: 10px;
-        color: #333;
+        color: #EAEAEA;
+        font-weight: 600;
     }
     .card-text {
-        color: #666;
+        color: #B0B3B8;
         font-size: 1rem;
     }
-    .btn-eliminar {
-        background-color: #dc3545;
-        color: white;
+    .btn-danger, .btn-eliminar {
+        background-color: #FF4C60 !important;
+        color: #fff !important;
         border: none;
         padding: 5px 10px;
         border-radius: 4px;
         cursor: pointer;
         margin-right: 5px;
+        transition: background 0.2s;
     }
-    .btn-eliminar:hover {
-        background-color: #c82333;
+    .btn-danger:hover, .btn-eliminar:hover {
+        background-color: #D7263D !important;
     }
-    .add-to-sidebar {
-        background-color: #28a745;
-        color: white;
+    .btn-success, .add-to-sidebar {
+        background-color: #00DFA2 !important;
+        color: #181A20 !important;
         border: none;
         padding: 5px 10px;
         border-radius: 4px;
         cursor: pointer;
         margin-top: 10px;
+        transition: background 0.2s;
     }
-    .add-to-sidebar:hover {
-        background-color: #218838;
+    .btn-success:hover, .add-to-sidebar:hover {
+        background-color: #00A97F !important;
+        color: #fff !important;
     }
     .card-buttons {
         display: flex;
@@ -240,6 +263,9 @@
     }
     .quantity-selector input {
         max-width: 70px;
+        background: #23272F;
+        color: #EAEAEA;
+        border: 1px solid #393E46;
     }
     .categoria-card {
         width: 200px;
@@ -247,44 +273,72 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #fff;
+        background: #23272F;
         border-radius: 10px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.13);
         transition: all 0.3s ease;
         cursor: pointer;
+        border: 1.5px solid #393E46;
     }
     .categoria-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transform: translateY(-5px) scale(1.04);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.18);
+        border-color: #00DFA2;
     }
     .categoria-card h3 {
-        margin: 0;
-        color: #333;
+        max-width: 160px; /* Ajusta según el ancho de tu card */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
     }
     .back-button {
         margin-bottom: 20px;
         cursor: pointer;
-        color: #0d6efd;
+        color: #00A9FF;
         display: inline-flex;
         align-items: center;
+        font-weight: 500;
     }
     .back-button:hover {
         text-decoration: underline;
+        color: #00DFA2;
     }
     .content-header {
         margin-bottom: 25px;
-        /* para el diseño */
-        /* border: red solid 1px; */
     }
     .content-header-title {
         font-family: "Rubik", sans-serif;
         font-size: 24px;
         font-weight: bold;
-        color: #333;
-        margin-left: 5.5%;
+        color: #EAEAEA;    
     }
     .modal-backdrop {
         display: none;
+    }
+    /* Modales */
+    .modal-content {
+        background: #23272F;
+        color: #EAEAEA;
+        border-radius: 12px;
+        border: 1px solid #393E46;
+    }
+    .modal-header, .modal-footer {
+        border: none;
+    }
+    .form-control, .form-select {
+        background: #181A20;
+        color: #EAEAEA;
+        border: 1px solid #393E46;
+    }
+    .form-control:focus, .form-select:focus {
+        background: #23272F;
+        color: #fff;
+        border-color: #00DFA2;
+        box-shadow: none;
+    }
+    .btn-close {
+        filter: invert(1);
     }
 </style>
 
@@ -365,11 +419,12 @@
     });
 
     // Evento para agregar producto (id generado del nombre normalizado)
-    productoForm.addEventListener("submit", (event) => {
+    productoForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         const categoriaId = document.getElementById("categoriaProducto").value;
         const nombre = document.getElementById("nombreProducto").value.trim();
         const precio = parseFloat(document.getElementById("precioProducto").value);
+        const imagenInput = document.getElementById("imagenProducto");
 
         // Validaciones
         if (!nombre) {
@@ -408,11 +463,18 @@
             return;
         }
 
+        // Convertir imagen a base64 si hay archivo seleccionado
+        let imagenURL = "https://via.placeholder.com/150";
+        if (imagenInput.files && imagenInput.files[0]) {
+            imagenURL = await fileToBase64(imagenInput.files[0]);
+        }
+
         const producto = {
             id: productoId,
             categoriaId: categoriaId,
             nombre: nombre,
-            precio: precio
+            precio: precio,
+            imagenURL: imagenURL // Guardar la imagen
         };
 
         guardarProducto(producto);
@@ -429,6 +491,16 @@
             timerProgressBar: true
         });
     });
+
+    // Función para convertir archivo a base64
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
 
     // Eventos para cantidad
     decrementQuantityBtn.addEventListener("click", () => {
@@ -566,36 +638,42 @@
         card.classList.add("card");
         card.id = `producto-${producto.id}`;
         card.dataset.id = producto.id;
-        
-        // Asegurar que el precio sea número
+
         const precio = typeof producto.precio === 'string' ? 
                     parseFloat(producto.precio) : 
                     producto.precio;
 
+        const imagenHTML = producto.imagenURL
+            ? `<img src="${producto.imagenURL}" class="card-img-top" alt="${producto.nombre}">`
+            : `<img src="https://via.placeholder.com/150" class="card-img-top" alt="Sin imagen">`;
+
+        // Usa id únicos para los botones y clases Bootstrap
         card.innerHTML = `
+            ${imagenHTML}
             <div class="card-body">
                 <h5 class="card-title">${producto.nombre}</h5>
                 <p class="card-text">Precio: $${precio.toFixed(2)}</p>
-                <div class="card-buttons">
-                    <button class="btn-eliminar" data-id="${producto.id}">Eliminar</button>
-                    <button class="add-to-sidebar" data-id="${producto.id}">Agregar</button>
+                <div class="card-buttons d-flex justify-content-between">
+                    <button id="btn-eliminar-${producto.id}" class="btn btn-danger btn-sm" data-id="${producto.id}">Eliminar</button>
+                    <button id="btn-agregar-${producto.id}" class="btn btn-success btn-sm" data-id="${producto.id}">Agregar</button>
                 </div>
             </div>
         `;
-        
-        card.querySelector('.btn-eliminar').addEventListener('click', (e) => {
+
+        // Ahora selecciona por id
+        card.querySelector(`#btn-eliminar-${producto.id}`).addEventListener('click', (e) => {
             e.stopPropagation();
             eliminarProducto(producto.id, card);
         });
-        
-        card.querySelector('.add-to-sidebar').addEventListener('click', (e) => {
+
+        card.querySelector(`#btn-agregar-${producto.id}`).addEventListener('click', (e) => {
             e.stopPropagation();
             currentProduct = { ...producto, precio: parseFloat(producto.precio) };
             currentQuantity = 1;
             productQuantityInput.value = 1;
             cantidadModal.show();
         });
-        
+
         productoContainer.appendChild(card);
     }
 
