@@ -1,82 +1,57 @@
 <!DOCTYPE html>
 <%- include('load/head') %>
 <body>
-
-
     <%- include('load/nav') %>
-    <main class="main-container d-flex" style="gap: 30px;">
-        <!-- Sidebar de categorías para desktop -->
-        <aside class="sidebar-categorias d-none d-md-block" style="width: 250px; min-width: 200px;">
-            <h4>Categorías</h4>
-            <ul id="sidebarCategoriasDesktop" class="list-group">
-                <!-- Las categorías se llenarán dinámicamente -->
-            </ul>
-            <button class="btn btn-dark w-100 mt-3" data-bs-toggle="modal" data-bs-target="#categoriaModal">
-                <i class="bi bi-box-seam"></i> Nueva Categoría
-            </button>
-        </aside>
-
-        <!-- Offcanvas para móvil -->
-        <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="offcanvasCategorias" aria-labelledby="offcanvasCategoriasLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasCategoriasLabel">Categorías</h5>
-                <button type="button" class="btn-close btn btn-info" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    <main class="main-container">
+        <%- include('load/side-bar') %>
+        <div class="content">
+            <div class="content-header">
+                <h3 class="content-header-title">Categorias</h3>
+            </div>                 
+            <div class="categorias-container" id="categorias">
+                <!-- Las categorías se agregarán aquí dinámicamente -->
             </div>
-            <div class="offcanvas-body">
-                <ul id="sidebarCategoriasMobile" class="list-group">
-                    <!-- Las categorías se llenarán dinámicamente -->
-                </ul>
-                <button class="btn btn-dark w-100 mt-3" data-bs-toggle="modal" data-bs-target="#categoriaModal">
-                    <i class="bi bi-box-seam"></i> Nueva Categoría
-                </button>
+
+            <div class="producto-container" id="productos" style="display: none;">
+                <!-- Las cards de productos se agregarán aquí dinámicamente -->
             </div>
         </div>
 
-        <!-- Contenido principal: productos de la categoría seleccionada -->
-        <section class="productos-section flex-grow-1">
-            <!-- Botón para mostrar categorías en móviles -->
-            <button class="btn btn-dark d-block d-md-none mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCategorias" aria-controls="offcanvasCategorias">
-                <i class="bi bi-list"></i> Categorías
-            </button>
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h1 id="tituloCategoriaSeleccionada">Selecciona una <br> 
-                    categoría</h1>
-                <button class="btn btn-primary" id="btnAgregarProducto" data-bs-toggle="modal" data-bs-target="#productoModal" style="display: none;">
-                    <i class="bi bi-basket"></i> Nuevo Producto
-                </button>
-            </div>
-            <div class="productos-container" id="productosCategoriaSeleccionada">
-                <!-- Los productos se llenarán dinámicamente -->
-            </div>
-        </section>
+        <button class="btn btn-dark btn-content btn-categoria" data-bs-toggle="modal" data-bs-target="#categoriaModal" title="Agregar Categoría">
+            <span>
+                <i class="bi bi-box-seam"></i>
+            </span>
+        </button>
+
+        <button class="btn btn-primary btn-content btn-producto" id="btnAgregarProducto" data-bs-toggle="modal" data-bs-target="#productoModal" style="display: none;" title="Agregar Producto">
+            <span>
+                <i class="bi bi-basket"></i>
+            </span>
+        </button>
     </main>
 
-    <!-- Modal para añadir/editar categoría (modificado para editar un <li>) -->
+    <!-- Modal para añadir categoría -->
     <div class="modal fade" id="categoriaModal" tabindex="-1" aria-labelledby="categoriaModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="categoriaModalLabel">Editar Categoría</h5>
+                    <h5 class="modal-title" id="categoriaModalLabel">Añadir Categoría</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="categoriaForm">
-                        <input type="hidden" id="categoriaId">
                         <div class="mb-3">
                             <label for="nombreCategoria" class="form-label">Nombre de la categoría</label>
-                            <input type="text" class="form-control" id="nombreCategoria" required maxlength="30">
+                            <input type="text" class="form-control" id="nombreCategoria" required>
                         </div>
-                        <div class="d-flex justify-content-between">
-                            <button type="button" class="btn btn-danger" id="btnEliminarCategoria" style="display: none;">Eliminar</button>
-                            <button type="submit" class="btn btn-primary">Guardar</button>
-                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal para añadir/editar producto -->
+    <!-- Modal para añadir producto -->
     <div class="modal fade" id="productoModal" tabindex="-1" aria-labelledby="productoModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -88,7 +63,13 @@
                     <form id="productoForm">
                         <input type="hidden" id="productoId">
                         <input type="hidden" id="productoCategoriaId">
-                        <!-- Se elimina el select de categoría -->
+                        <div class="mb-3">
+                            <label for="categoriaProducto" class="form-label">Categoría</label>
+                            <select class="form-select" id="categoriaProducto" required>
+                                <option value="" selected disabled>Seleccione una categoría</option>
+                                <!-- Las opciones se llenarán dinámicamente -->
+                            </select>
+                        </div>
                         <div class="mb-3">
                             <label for="nombreProducto" class="form-label">Nombre del producto</label>
                             <input type="text" class="form-control" id="nombreProducto" required>
@@ -111,6 +92,26 @@
         </div>
     </div>
 
+    <!-- Modal para seleccionar cantidad -->
+    <div class="modal fade" id="cantidadModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Seleccionar cantidad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="quantity-selector">
+                        <button class="btn btn-outline-secondary" id="decrementQuantity">-</button>
+                        <input type="number" id="productQuantity" value="1" min="1" class="form-control text-center">
+                        <button class="btn btn-outline-secondary" id="incrementQuantity">+</button>
+                    </div>
+                    <button id="confirmAddToSidebar" class="btn btn-primary mt-3">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- SweetAlert2 -->
@@ -122,18 +123,21 @@
     body {
         margin: 0;
         padding: 0;
+        display: flex;
+        flex-direction: column;
         font-family: 'Rubik', Arial, sans-serif;
         background: #181A20;
         color: #EAEAEA;
     }
     .main-container {
-        padding: 20px;
-        min-height: 100vh;
+        display: flex;
+        height: calc(100vh - 60px);
         background: #181A20;
     }
     .content {
+        flex-grow: 1;
         padding: 20px;
-        border-radius: 20px;
+        overflow-y: auto;
         background: #23272F;
         box-shadow: 0 4px 32px rgba(0,0,0,0.25);
     }
@@ -143,10 +147,15 @@
         gap: 20px;
         margin-top: 20px;
     }
+    .producto-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 20px;
+    }
     .btn-content {
         position: fixed;
         bottom: 30px;
-        right: 30px;
         width: 60px;
         height: 60px;
         border-radius: 50%;
@@ -158,109 +167,66 @@
         box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         border: none;
     }
-    .btn-dark {
-        background: #23272F !important;
-        color: #00DFA2 !important;
-        transition: background 0.2s, color 0.2s;
-    }
-    .btn-dark:hover {
-        background: #00DFA2 !important;
-        color: #23272F !important;
-    }
-    .btn-primary {
-        background: #23272F !important;
-        color: #00A9FF !important;
-        transition: background 0.2s, color 0.2s;
-        border: none;
-    }
-    .btn-primary:hover {
-        background: #00A9FF !important;
-        color: #23272F !important;
-    }
-    .categoria-card {
-        width: 100%;
-        border: 1.5px solid #393E46;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+    .btn-categoria {
+        left: 17px;
+        bottom: 17px;
         background: #23272F;
-        padding: 15px;
-        margin-bottom: 20px;
-        transition: all 0.3s ease;
-    }
-    .categoria-card:hover {
-        box-shadow: 0 5px 20px rgba(0,0,0,0.18);
-        border-color: #00DFA2;
-    }
-    .categoria-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #393E46;
-    }
-    .categoria-title {
-        font-size: 1.5rem;
-        margin: 0;
         color: #00DFA2;
-        font-weight: 600;
+        transition: background 0.2s, color 0.2s;
     }
-    .categoria-actions {
-        display: flex;
-        gap: 10px;
+    .btn-categoria:hover {
+        background: #00DFA2;
+        color: #23272F;
     }
-    .productos-container {
-        display: flex;
-        flex-direction: row;
-        gap: 15px;
-        align-items: flex-start;
-        overflow-x: auto;
-        overflow-y: hidden;
-        width: 100%;
-        padding-bottom: 10px;
-        scrollbar-color: #393E46 #23272F;
-        scrollbar-width: thin;
-    }
-    .producto-card {
-        width: 200px;
-        border: 1.5px solid #393E46;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+    .btn-producto {
+        left: 80px;
+        bottom: 17px;
         background: #23272F;
-        transition: transform 0.2s;
+        color: #00A9FF;
+        transition: background 0.2s, color 0.2s;
     }
-    .producto-card:hover {
+    .btn-producto:hover {
+        background: #00A9FF;
+        color: #23272F;
+    }
+    .card {
+        margin: 10px;
+        border: 1px solid #23272F;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+        background: #23272F;
+        transition: transform 0.2s, box-shadow 0.2s;
+        width: 18rem;
+        cursor: pointer;
+        display: inline-block;
+    }
+    .card:hover {
+        transform: translateY(-5px) scale(1.03);
         box-shadow: 0 6px 24px rgba(0,0,0,0.25);
-        border-color: #00DFA2;
     }
-    .producto-img {
-        height: 120px;
-        width: 100%;
+    .card-img-top {
+        height: 180px;
         object-fit: cover;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
         background: #181A20;
     }
-    .producto-body {
-        padding: 10px;
+    .card-body {
+        padding: 15px;
     }
-    .producto-title {
-        font-size: 1rem;
-        margin-bottom: 5px;
-        color: #EAEAEA;
-    }
-    .producto-precio {
-        color: #00DFA2;
-        font-weight: bold;
+    .card-title {
+        font-size: 1.2rem;
         margin-bottom: 10px;
+        color: #EAEAEA;
+        font-weight: 600;
     }
-    .producto-actions {
-        display: flex;
-        justify-content: space-between;
+    .card-text {
+        color: #B0B3B8;
+        font-size: 1rem;
     }
-    .btn-info {
-        background-color: #00A9FF !important;
-        color: #181A20 !important;
+    .btn-danger, .btn-eliminar {
+        background-color: #FF4C60 !important;
+        color: #fff !important;
         border: none;
         padding: 5px 10px;
         border-radius: 4px;
@@ -268,25 +234,87 @@
         margin-right: 5px;
         transition: background 0.2s;
     }
-    .btn-info:hover {
-        background-color: #0077b6 !important;
-        color: #fff !important;
+    .btn-danger:hover, .btn-eliminar:hover {
+        background-color: #D7263D !important;
     }
-    .btn-danger, .btn-delete {
-        background-color: #FF4C60 !important;
-        color: #fff !important;
+    .btn-success, .add-to-sidebar {
+        background-color: #00DFA2 !important;
+        color: #181A20 !important;
         border: none;
         padding: 5px 10px;
         border-radius: 4px;
         cursor: pointer;
+        margin-top: 10px;
         transition: background 0.2s;
     }
-    .btn-danger:hover, .btn-delete:hover {
-        background-color: #D7263D !important;
+    .btn-success:hover, .add-to-sidebar:hover {
+        background-color: #00A97F !important;
+        color: #fff !important;
     }
-    h1 {
+    .card-buttons {
+        display: flex;
+        justify-content: space-between;
+    }
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    .quantity-selector input {
+        max-width: 70px;
+        background: #23272F;
         color: #EAEAEA;
+        border: 1px solid #393E46;
+    }
+    .categoria-card {
+        width: 200px;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #23272F;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 1.5px solid #393E46;
+    }
+    .categoria-card:hover {
+        transform: translateY(-5px) scale(1.04);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.18);
+        border-color: #00DFA2;
+    }
+    .categoria-card h3 {
+        max-width: 160px; /* Ajusta según el ancho de tu card */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+    }
+    .back-button {
         margin-bottom: 20px;
+        cursor: pointer;
+        color: #00A9FF;
+        display: inline-flex;
+        align-items: center;
+        font-weight: 500;
+    }
+    .back-button:hover {
+        text-decoration: underline;
+        color: #00DFA2;
+    }
+    .content-header {
+        margin-bottom: 25px;
+    }
+    .content-header-title {
+        font-family: "Rubik", sans-serif;
+        font-size: 24px;
+        font-weight: bold;
+        color: #EAEAEA;    
+    }
+    .modal-backdrop {
+        display: none;
     }
     /* Modales */
     .modal-content {
@@ -312,114 +340,40 @@
     .btn-close {
         filter: invert(1);
     }
-    .alert-info {
-        background: #23272F;
-        color: #00A9FF;
-        border: 1px solid #00A9FF;
-    }
-    .modal-backdrop {
-        display: none;
-    }
-    .modal-dialog {
-        box-shadow: 0 80px 32px rgba(0,0,0,0.45);
-    }
-    .sidebar-categorias {
-        background: #23272F;
-        border-radius: 12px;
-        padding: 20px;
-        min-height: 400px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.13);
-    }
-    .list-group-item.active {
-        background: #00DFA2 !important;
-        color: #23272F !important;
-        font-weight: bold;
-    }
-    .productos-section {
-        background: #23272F;
-        border-radius: 12px;
-        padding: 20px;
-        min-height: 400px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.13);
-    }
-    .productos-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-    #tituloCategoriaSeleccionada {
-        max-width: 60vw;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        display: inline-block;
-        vertical-align: middle;
-    }
-    .sidebar-categorias .list-group-item span {
-        display: inline-block;
-        max-width: 150px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        vertical-align: middle;
-    }
-    #sidebarCategoriasMobile .list-group-item span {
-        display: inline-block;
-        max-width: 120px; /* Puedes ajustar este valor según el espacio disponible */
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        vertical-align: middle;
-    }
-    aside {
-        min-width: 250px !important;
-        max-width: 250px !important;
-    }
-
-    @media (max-width: 430px) {
-        .main-container {
-            flex-direction: column !important;
-            gap: 0 !important;
-            padding: 10px !important;
-        }
-        .sidebar-categorias {
-            display: none !important;
-        }
-        .productos-section {
-            padding: 10px !important;
-        }
-    }
-    .offcanvas-backdrop {
-        display: none;
-    }
 </style>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
     // Elementos principales
     const categoriaForm = document.getElementById("categoriaForm");
     const productoForm = document.getElementById("productoForm");
     const categoriasContainer = document.getElementById("categorias");
-    const categoriaModal = new bootstrap.Modal(document.getElementById('categoriaModal'));
-    const productoModal = new bootstrap.Modal(document.getElementById('productoModal'));
+    const productoContainer = document.getElementById("productos");
+    const cantidadModal = new bootstrap.Modal(document.getElementById('cantidadModal'));
+    const btnAgregarProducto = document.getElementById("btnAgregarProducto");
     const categoriaProductoSelect = document.getElementById("categoriaProducto");
-    const btnEliminarCategoria = document.getElementById("btnEliminarCategoria");
-    const btnEliminarProducto = document.getElementById("btnEliminarProducto");
+    
+    // Elementos para cantidad
+    const productQuantityInput = document.getElementById("productQuantity");
+    const decrementQuantityBtn = document.getElementById("decrementQuantity");
+    const incrementQuantityBtn = document.getElementById("incrementQuantity");
+    const confirmAddToSidebarBtn = document.getElementById("confirmAddToSidebar");
     
     // Variables de estado
-    let editingCategoria = null;
-    let editingProducto = null;
-    let categoriaSeleccionada = null;
+    let currentProduct = null;
+    let currentQuantity = 1;
+    let currentCategory = null;
 
-    // Cargar categorías al iniciar
-    cargarCategorias();
+    // Sistema de actualización dinámica
+    function actualizarSidebar() {
+        const event = new CustomEvent('actualizarSidebar');
+        document.dispatchEvent(event);
+    }
 
-    // Evento para agregar/editar categoría
+    // Evento para agregar categoría (id generado del nombre normalizado)
     categoriaForm.addEventListener("submit", (event) => {
         event.preventDefault();
-
         const nombre = document.getElementById("nombreCategoria").value.trim();
-        const categoriaIdOriginal = document.getElementById("categoriaId").value; // id original (oculto)
-        const categoriaIdNuevo = nombre.toLowerCase().replace(/\s+/g, '-');
 
         if (!nombre) {
             Swal.fire({
@@ -431,155 +385,48 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        // id de la categoría: nombre normalizado (minúsculas y guiones)
+        const categoriaId = nombre.toLowerCase().replace(/\s+/g, '-');
+
+        // Control de unicidad de categoría
         let categorias = JSON.parse(localStorage.getItem('categorias')) || [];
-        const categoriaExistente = categorias.find(c => c.id === categoriaIdNuevo);
-
-        // Si es edición
-        if (categoriaIdOriginal) {
-            // Si el id cambió y ya existe otra categoría con ese id, error
-            if (categoriaIdOriginal !== categoriaIdNuevo && categoriaExistente) {
-                Swal.fire({
-                    title: 'Nombre ocupado',
-                    text: 'Ya existe una categoría con ese nombre. Por favor elige otro.',
-                    icon: 'warning',
-                    confirmButtonText: 'Entendido'
-                });
-                return;
-            }
-
-            // Actualizar categoría
-            const index = categorias.findIndex(c => c.id === categoriaIdOriginal);
-            if (index >= 0) {
-                categorias[index] = { id: categoriaIdNuevo, nombre: nombre };
-            }
-
-            // Si el id cambió, actualiza los productos relacionados
-            if (categoriaIdOriginal !== categoriaIdNuevo) {
-                let productos = JSON.parse(localStorage.getItem('productos')) || [];
-                productos.forEach(p => {
-                    if (p.categoriaId === categoriaIdOriginal) {
-                        p.categoriaId = categoriaIdNuevo;
-                    }
-                });
-                localStorage.setItem('productos', JSON.stringify(productos));
-            }
-        } else {
-            // Si es nueva y ya existe, error
-            if (categoriaExistente) {
-                Swal.fire({
-                    title: 'Nombre ocupado',
-                    text: 'Ya existe una categoría con ese nombre. Por favor elige otro.',
-                    icon: 'warning',
-                    confirmButtonText: 'Entendido'
-                });
-                return;
-            }
-            categorias.push({ id: categoriaIdNuevo, nombre: nombre });
+        const categoriaExistente = categorias.find(c => c.id === categoriaId);
+        if (categoriaExistente) {
+            Swal.fire({
+                title: 'Nombre ocupado',
+                text: 'Ya existe una categoría con ese nombre. Por favor elige otro.',
+                icon: 'warning',
+                confirmButtonText: 'Entendido'
+            });
+            return;
         }
 
-        localStorage.setItem('categorias', JSON.stringify(categorias));
-        categoriaForm.reset();
-        categoriaModal.hide();
+        const categoria = { id: categoriaId, nombre: nombre };
 
-        const message = categoriaIdOriginal ? 'Categoría actualizada' : 'Categoría agregada';
+        guardarCategoria(categoria);
+        crearCardCategoria(categoria);
+        categoriaForm.reset();
+        new bootstrap.Modal(document.getElementById('categoriaModal')).hide();
+
         Swal.fire({
             title: '¡Éxito!',
-            text: `${message} correctamente`,
+            text: 'Categoría agregada correctamente',
             icon: 'success',
+            confirmButtonText: 'Aceptar',
             timer: 1500,
-            timerProgressBar: true,
-            showConfirmButton: false
-        });
-
-        // Actualizar título si la categoría editada es la seleccionada actualmente
-        if (categoriaSeleccionada === categoriaIdOriginal || categoriaSeleccionada === categoriaIdNuevo) {
-            document.getElementById('tituloCategoriaSeleccionada').textContent = nombre;
-            // Si el id cambió, actualiza la selección
-            categoriaSeleccionada = categoriaIdNuevo;
-        }
-
-        cargarCategorias();
-    });
-
-    // Evento para eliminar categoría
-    btnEliminarCategoria.addEventListener("click", () => {
-        Swal.fire({
-            title: '¿Eliminar categoría?',
-            html: `¿Estás seguro de eliminar la categoría <strong>${editingCategoria.nombre}</strong> y todos sus productos?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                eliminarCategoria(editingCategoria.id);
-                categoriaModal.hide();
-
-                // Limpia el formulario y oculta el botón eliminar para evitar que quede visible tras eliminar
-                categoriaForm.reset();
-                btnEliminarCategoria.style.display = 'none';
-
-                Swal.fire({
-                    title: '¡Eliminada!',
-                    text: 'La categoría y sus productos han sido eliminados',
-                    icon: 'success',
-                    timer: 1500,
-                    timerProgressBar: true
-                });
-            }
+            timerProgressBar: true
         });
     });
 
-    // Evento para eliminar producto (asegúrate de tener editingProducto actualizado)
-    btnEliminarProducto.addEventListener("click", () => {
-        Swal.fire({
-            title: '¿Eliminar producto?',
-            html: `¿Estás seguro de eliminar el producto <strong>${editingProducto.nombre}</strong>?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                eliminarProducto(editingProducto.id);
-                productoModal.hide();
-                Swal.fire({
-                    title: '¡Eliminado!',
-                    text: 'El producto ha sido eliminado',
-                    icon: 'success',
-                    timer: 1500,
-                    timerProgressBar: true,
-                    showConfirmButton: false
-                });
-                // Actualiza la lista en tiempo real
-                actualizarProductosDeCategoria(editingProducto.categoriaId);
-            }
-        });
-    });
-
-    // Evento para agregar/editar producto
+    // Evento para agregar producto (id generado del nombre normalizado)
     productoForm.addEventListener("submit", async (event) => {
         event.preventDefault();
-
-        const categoriaId = document.getElementById("productoCategoriaId").value;
+        const categoriaId = document.getElementById("categoriaProducto").value;
         const nombre = document.getElementById("nombreProducto").value.trim();
         const precio = parseFloat(document.getElementById("precioProducto").value);
         const imagenInput = document.getElementById("imagenProducto");
-        const productoId = document.getElementById("productoId").value;
 
-        let imagenURL = "https://via.placeholder.com/150";
-        if (imagenInput.files.length > 0) {
-            imagenURL = await fileToBase64(imagenInput.files[0]);
-        } else if (editingProducto && editingProducto.imagenURL) {
-            imagenURL = editingProducto.imagenURL;
-        }
-
+        // Validaciones
         if (!nombre) {
             Swal.fire({
                 title: 'Error',
@@ -600,325 +447,52 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Control de unicidad de producto SOLO dentro de la misma categoría
-        let productos = JSON.parse(localStorage.getItem('productos')) || [];
-        const productoIdFinal = productoId || nombre.toLowerCase().replace(/\s+/g, '-');
-        const productoExistente = productos.find(
-            p => 
-                p.categoriaId === categoriaId &&
-                p.nombre.trim().toLowerCase() === nombre.toLowerCase() &&
-                p.id !== productoId // Permite editar el mismo producto sin bloquear por nombre
-        );
+        // id del producto: nombre normalizado (minúsculas y guiones)
+        const productoId = nombre.toLowerCase().replace(/\s+/g, '-');
 
-        // Si es nuevo (no edición) y ya existe en la misma categoría, alerta
+        // Control de unicidad de producto
+        let productos = JSON.parse(localStorage.getItem('productos')) || [];
+        const productoExistente = productos.find(p => p.id === productoId);
         if (productoExistente) {
             Swal.fire({
                 title: 'Nombre ocupado',
-                text: 'Ya existe un producto con ese nombre en esta categoría. Por favor elige otro.',
+                text: 'Ya existe un producto con ese nombre. Por favor elige otro.',
                 icon: 'warning',
                 confirmButtonText: 'Entendido'
             });
             return;
         }
 
+        // Convertir imagen a base64 si hay archivo seleccionado
+        let imagenURL = "https://via.placeholder.com/150";
+        if (imagenInput.files && imagenInput.files[0]) {
+            imagenURL = await fileToBase64(imagenInput.files[0]);
+        }
+
         const producto = {
-            id: productoIdFinal,
+            id: productoId,
             categoriaId: categoriaId,
             nombre: nombre,
-            precio: precio.toFixed(2),
-            imagenURL: imagenURL
+            precio: precio,
+            imagenURL: imagenURL // Guardar la imagen
         };
 
         guardarProducto(producto);
+        crearCardProducto(producto);
         productoForm.reset();
-        productoModal.hide();
-        imagenInput.value = '';
-        actualizarProductosDeCategoria(categoriaId);
+        new bootstrap.Modal(document.getElementById('productoModal')).hide();
 
-        const message = productoId ? 'Producto actualizado' : 'Producto agregado';
         Swal.fire({
             title: '¡Éxito!',
-            text: `${message} correctamente`,
+            text: 'Producto agregado correctamente',
             icon: 'success',
+            confirmButtonText: 'Aceptar',
             timer: 1500,
-            timerProgressBar: true,
-            showConfirmButton: false
+            timerProgressBar: true
         });
-
-        // Actualizar productos de la categoría
-        actualizarProductosDeCategoria(producto.categoriaId);
     });
 
-    // Función para guardar categoría
-    function guardarCategoria(categoria) {
-        let categorias = JSON.parse(localStorage.getItem('categorias')) || [];
-        
-        // Si es edición, reemplazar
-        const index = categorias.findIndex(c => c.id == categoria.id);
-        if (index >= 0) {
-            categorias[index] = categoria;
-        } else {
-            categorias.push(categoria);
-        }
-        
-        localStorage.setItem('categorias', JSON.stringify(categorias));
-        cargarCategorias();
-    }
-
-    // Función para guardar producto
-    function guardarProducto(producto) {
-        let productos = JSON.parse(localStorage.getItem('productos')) || [];
-        
-        // Si es edición, reemplazar
-        const index = productos.findIndex(p => p.id == producto.id);
-        if (index >= 0) {
-            productos[index] = producto;
-        } else {
-            productos.push(producto);
-        }
-        
-        localStorage.setItem('productos', JSON.stringify(productos));
-        cargarCategorias();
-    }
-
-    // Función para cargar categorías con sus productos
-    function cargarCategorias() {
-        const categorias = JSON.parse(localStorage.getItem('categorias')) || [];
-        const productos = JSON.parse(localStorage.getItem('productos')) || [];
-        
-        categoriasContainer.innerHTML = '';
-        
-        if (categorias.length === 0) {
-            categoriasContainer.innerHTML = `
-                <div class="alert alert-info w-100">
-                    No hay categorías creadas. Agrega una categoría para comenzar.
-                </div>
-            `;
-            return;
-        }
-        
-        categorias.forEach(categoria => {
-            // Usar nombre normalizado como id
-            const categoriaId = categoria.id;
-            const categoriaCardId = `categoria-${categoriaId}`;
-            const editBtnId = `edit-categoria-${categoriaId}`;
-            const deleteBtnId = `delete-categoria-${categoriaId}`;
-
-            const categoriaCard = document.createElement("div");
-            categoriaCard.id = categoriaCardId;
-            categoriaCard.classList.add("categoria-card");
-
-            // Obtener productos de esta categoría
-            const productosCategoria = productos.filter(p => p.categoriaId == categoriaId);
-
-            categoriaCard.innerHTML = `
-                <div class="categoria-header" id="header-${categoriaId}">
-                    <h3 class="categoria-title" id="title-${categoriaId}">${categoria.nombre}</h3>
-                    <div class="categoria-actions" id="actions-${categoriaId}">
-                        <button class="btn btn-info" id="${editBtnId}" data-id="${categoriaId}">Editar</button>
-                        <button class="btn btn-danger" id="${deleteBtnId}" data-id="${categoriaId}">Eliminar</button>
-                    </div>
-                </div>
-                <div class="productos-container" id="productos-${categoriaId}">
-                    ${productosCategoria.length === 0 ? 
-                      '<p class="text-muted">No hay productos en esta categoría</p>' : 
-                      productosCategoria.map(producto => {
-                        const productoCardId = `producto-${producto.id}`;
-                        const editProdBtnId = `edit-producto-${producto.id}`;
-                        const deleteProdBtnId = `delete-producto-${producto.id}`;
-                        return `
-                            <div class="producto-card" id="${productoCardId}" data-id="${producto.id}">
-                                <img src="${producto.imagenURL}" class="producto-img" alt="${producto.nombre}">
-                                <div class="producto-body" id="body-${producto.id}">
-                                    <h5 class="producto-title" id="title-prod-${producto.id}">${producto.nombre}</h5>
-                                    <div class="producto-precio" id="precio-prod-${producto.id}">$${producto.precio}</div>
-                                    <div class="producto-actions" id="actions-prod-${producto.id}">
-                                        <button class="btn btn-info" id="${editProdBtnId}" data-id="${producto.id}">Editar</button>
-                                        <button class="btn btn-danger" id="${deleteProdBtnId}" data-id="${producto.id}">Eliminar</button>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                      }).join('')}
-                </div>
-            `;
-
-            categoriasContainer.appendChild(categoriaCard);
-
-            // Eventos para botones de categoría
-            document.getElementById(editBtnId).addEventListener('click', () => {
-                editarCategoria(categoriaId);
-            });
-
-            document.getElementById(deleteBtnId).addEventListener('click', (e) => {
-                e.stopPropagation();
-                Swal.fire({
-                    title: '¿Eliminar categoría?',
-                    html: `¿Estás seguro de eliminar la categoría <strong>${categoria.nombre}</strong> y todos sus productos?`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar',
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        eliminarCategoria(categoriaId);
-                        Swal.fire({
-                            title: '¡Eliminada!',
-                            text: 'La categoría y sus productos han sido eliminados',
-                            icon: 'success',
-                            timer: 1500,
-                            timerProgressBar: true
-                        });
-                    }
-                });
-            });
-
-            // Eventos para productos
-            productosCategoria.forEach(producto => {
-                const editProdBtnId = `edit-producto-${producto.id}`;
-                const deleteProdBtnId = `delete-producto-${producto.id}`;
-
-                document.getElementById(editProdBtnId).addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    editarProducto(producto.id);
-                });
-
-                document.getElementById(deleteProdBtnId).addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    Swal.fire({
-                        title: '¿Eliminar producto?',
-                        html: `¿Estás seguro de eliminar el producto <strong>${producto.nombre}</strong>?`,
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Sí, eliminar',
-                        cancelButtonText: 'Cancelar',
-                        reverseButtons: true
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            eliminarProducto(producto.id);
-                            Swal.fire({
-                                title: '¡Eliminado!',
-                                text: 'El producto ha sido eliminado',
-                                icon: 'success',
-                                timer: 1500,
-                                timerProgressBar: true
-                            });
-                        }
-                    });
-                });
-            });
-        });
-        
-        // Actualizar select de categorías en el modal de producto
-        actualizarSelectCategorias();
-    }
-
-    // Función para actualizar el select de categorías
-    function actualizarSelectCategorias() {
-        const categorias = JSON.parse(localStorage.getItem('categorias')) || [];
-        categoriaProductoSelect.innerHTML = '<option value="" selected disabled>Seleccione una categoría</option>';
-        
-        categorias.forEach(categoria => {
-            const option = document.createElement('option');
-            option.value = categoria.id;
-            option.textContent = categoria.nombre;
-            categoriaProductoSelect.appendChild(option);
-        });
-    }
-
-    // Función para editar categoría
-    function editarCategoria(id) {
-        const categorias = JSON.parse(localStorage.getItem('categorias')) || [];
-        const categoria = categorias.find(c => c.id == id);
-        
-        if (categoria) {
-            editingCategoria = categoria;
-            document.getElementById("categoriaModalLabel").textContent = "Editar Categoría";
-            document.getElementById("categoriaId").value = categoria.id;
-            document.getElementById("nombreCategoria").value = categoria.nombre;
-            btnEliminarCategoria.style.display = 'block';
-            categoriaModal.show();
-        }
-    }
-
-    // Función para eliminar categoría
-    function eliminarCategoria(id) {
-        // Eliminar del localStorage
-        let categorias = JSON.parse(localStorage.getItem('categorias')) || [];
-        categorias = categorias.filter(categoria => categoria.id != id);
-        localStorage.setItem('categorias', JSON.stringify(categorias));
-        
-        // Eliminar productos asociados
-        let productos = JSON.parse(localStorage.getItem('productos')) || [];
-        productos = productos.filter(producto => producto.categoriaId != id);
-        localStorage.setItem('productos', JSON.stringify(productos));
-        
-        // Recargar vista
-        cargarCategorias();
-    }
-
-    // Función para editar producto
-    function editarProducto(id) {
-        const productos = JSON.parse(localStorage.getItem('productos')) || [];
-        const producto = productos.find(p => p.id == id);
-
-        if (producto) {
-            editingProducto = producto;
-            document.getElementById("productoModalLabel").textContent = "Editar Producto";
-            document.getElementById("productoId").value = producto.id;
-            document.getElementById("productoCategoriaId").value = producto.categoriaId;
-            // Quita esta línea porque ya no existe el select:
-            // document.getElementById("categoriaProducto").value = producto.categoriaId;
-            document.getElementById("nombreProducto").value = producto.nombre;
-            document.getElementById("precioProducto").value = producto.precio;
-            btnEliminarProducto.style.display = 'block';
-            productoModal.show();
-        }
-    }
-
-    // Función para eliminar producto
-    window.eliminarProducto = function(id) {
-        const productos = JSON.parse(localStorage.getItem('productos')) || [];
-        const producto = productos.find(p => p.id == id);
-
-        if (!producto) return;
-
-        Swal.fire({
-            title: '¿Eliminar producto?',
-            html: `¿Estás seguro de eliminar el producto <strong>${producto.nombre}</strong>?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Eliminar del localStorage
-                let productos = JSON.parse(localStorage.getItem('productos')) || [];
-                productos = productos.filter(producto => producto.id != id);
-                localStorage.setItem('productos', JSON.stringify(productos));
-                actualizarProductosDeCategoria(producto.categoriaId);
-
-                Swal.fire({
-                    title: '¡Eliminado!',
-                    text: 'El producto ha sido eliminado',
-                    icon: 'success',
-                    timer: 1500,
-                    timerProgressBar: true,
-                    showConfirmButton: false
-                });
-            }
-        });
-    }
-
-    // Convertir archivo a base64
+    // Función para convertir archivo a base64
     function fileToBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -928,200 +502,276 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Mostrar mensaje de bienvenida al cargar
-    Swal.fire({
-        title: 'Inventario de Productos',
-        text: 'Bienvenido al sistema de gestión de inventario',
-        icon: 'info',
-        timer: 2000,
-        timerProgressBar: true,
-        showConfirmButton: false
+    // Eventos para cantidad
+    decrementQuantityBtn.addEventListener("click", () => {
+        if (currentQuantity > 1) currentQuantity--;
+        productQuantityInput.value = currentQuantity;
     });
-
-    // Cargar categorías en sidebar y seleccionar la primera por defecto
-    function cargarSidebarCategorias() {
-        const categorias = JSON.parse(localStorage.getItem('categorias')) || [];
-        const sidebarDesktop = document.getElementById('sidebarCategoriasDesktop');
-        const sidebarMobile = document.getElementById('sidebarCategoriasMobile');
-        [sidebarDesktop, sidebarMobile].forEach(sidebar => {
-            if (!sidebar) return;
-            sidebar.innerHTML = '';
-
-            if (categorias.length === 0) {
-                sidebar.innerHTML = '<li class="list-group-item text-muted">No hay categorías</li>';
-                if (sidebar === sidebarDesktop) {
-                    document.getElementById('tituloCategoriaSeleccionada').textContent = 'Selecciona una categoría';
-                    document.getElementById('btnAgregarProducto').style.display = 'none';
-                    document.getElementById('productosCategoriaSeleccionada').innerHTML = '';
-                }
-                return;
-            }
-
-            categorias.forEach((cat, idx) => {
-                const li = document.createElement('li');
-                li.className = 'list-group-item d-flex justify-content-between align-items-center list-group-item-action' + (categoriaSeleccionada === cat.id || (!categoriaSeleccionada && idx === 0) ? ' active' : '');
-                li.style.cursor = 'pointer';
-
-                // Nombre de la categoría (clic para seleccionar)
-                const span = document.createElement('span');
-                span.textContent = cat.nombre;
-                span.onclick = () => {
-                    seleccionarCategoria(cat.id);
-                    // Si estamos en móvil, cierra el offcanvas al seleccionar
-                    if (sidebar === sidebarMobile) {
-                        const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('offcanvasCategorias'));
-                        offcanvas.hide();
-                    }
-                };
-
-                // Botones editar y borrar
-                const btnGroup = document.createElement('div');
-                btnGroup.className = 'btn-group btn-group-sm';
-
-                const btnEdit = document.createElement('button');
-                btnEdit.className = 'btn btn-info';
-                btnEdit.innerHTML = '<i class="bi bi-pencil"></i>';
-                btnEdit.onclick = (e) => {
-                    e.stopPropagation();
-                    editarCategoria(cat.id);
-                };
-
-                const btnDelete = document.createElement('button');
-                btnDelete.className = 'btn btn-danger';
-                btnDelete.innerHTML = '<i class="bi bi-trash"></i>';
-                btnDelete.onclick = (e) => {
-                    e.stopPropagation();
-                    Swal.fire({
-                        title: '¿Eliminar categoría?',
-                        html: `¿Estás seguro de eliminar la categoría <strong>${cat.nombre}</strong> y todos sus productos?`,
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Sí, eliminar',
-                        cancelButtonText: 'Cancelar',
-                        reverseButtons: true
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            eliminarCategoria(cat.id);
-                            Swal.fire({
-                                title: '¡Eliminada!',
-                                text: 'La categoría y sus productos han sido eliminados',
-                                icon: 'success',
-                                timer: 1500,
-                                timerProgressBar: true
-                            });
-                        }
-                    });
-                };
-
-                btnGroup.appendChild(btnEdit);
-                btnGroup.appendChild(btnDelete);
-
-                li.appendChild(span);
-                li.appendChild(btnGroup);
-
-                sidebar.appendChild(li);
+    
+    incrementQuantityBtn.addEventListener("click", () => {
+        currentQuantity++;
+        productQuantityInput.value = currentQuantity;
+    });
+    
+    productQuantityInput.addEventListener("change", (e) => {
+        currentQuantity = Math.max(1, parseInt(e.target.value) || 1);
+        productQuantityInput.value = currentQuantity;
+    });
+    
+    confirmAddToSidebarBtn.addEventListener("click", () => {
+        cantidadModal.hide();
+        if (currentProduct) {
+            agregarProductoASidebar(currentProduct, currentQuantity);
+            currentProduct = null;
+            currentQuantity = 1;
+            productQuantityInput.value = 1;
+            
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Producto agregado al carrito',
+                showConfirmButton: false,
+                timer: 1500,
+                toast: true
             });
+        }
+    });
 
-            // Selecciona la primera si no hay selección
-            if (!categoriaSeleccionada && categorias.length > 0 && sidebar === sidebarDesktop) {
-                seleccionarCategoria(categorias[0].id);
+    // Funciones principales
+    function guardarCategoria(categoria) {
+        let categorias = JSON.parse(localStorage.getItem('categorias')) || [];
+        categorias.push(categoria);
+        localStorage.setItem('categorias', JSON.stringify(categorias));
+        actualizarSelectCategorias();
+    }
+
+    function guardarProducto(producto) {
+        let productos = JSON.parse(localStorage.getItem('productos')) || [];
+        productos.push(producto);
+        localStorage.setItem('productos', JSON.stringify(productos));
+    }
+
+    function cargarCategorias() {
+        const categorias = JSON.parse(localStorage.getItem('categorias')) || [];
+        categorias.forEach(crearCardCategoria);
+        actualizarSelectCategorias();
+    }
+
+    function cargarProductos(categoriaId) {
+        const productos = JSON.parse(localStorage.getItem('productos')) || [];
+        productoContainer.innerHTML = '';
+        productos
+            .filter(p => p.categoriaId == categoriaId)
+            .forEach(producto => {
+                crearCardProducto(producto);
+            });
+    }
+
+    function actualizarSelectCategorias() {
+        const categorias = JSON.parse(localStorage.getItem('categorias')) || [];
+        categoriaProductoSelect.innerHTML = '<option value="" selected disabled>Seleccione una categoría</option>';
+        categorias.forEach(categoria => {
+            const option = document.createElement('option');
+            option.value = categoria.id;
+            option.textContent = categoria.nombre;
+            categoriaProductoSelect.appendChild(option);
+        });
+    }
+
+    function crearCardCategoria(categoria) {
+        const card = document.createElement("div");
+        card.classList.add("categoria-card");
+        card.id = `categoria-${categoria.id}`;
+        card.dataset.id = categoria.id;
+        card.innerHTML = `
+            <h3>${categoria.nombre} <i class="bi bi-box-seam"></i></h3>
+        `;
+        
+        card.addEventListener('click', () => {
+            currentCategory = categoria;
+            categoriasContainer.style.display = 'none';
+            productoContainer.style.display = 'flex';
+            btnAgregarProducto.style.display = 'flex';
+
+            // Elimina el back button anterior si existe
+            const oldBackButton = document.querySelector('.back-button');
+            if (oldBackButton) oldBackButton.remove();
+
+            const backButton = document.createElement('div');
+            backButton.classList.add('back-button');
+            backButton.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16" style="margin-right: 5px;">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                </svg>
+                Volver a categorías
+            `;
+            backButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                volverACategorias();
+            });
+            productoContainer.parentNode.insertBefore(backButton, productoContainer);
+
+            // LIMPIA el contenedor y carga los productos de la categoría seleccionada
+            cargarProductos(categoria.id);
+        });
+        
+        // Agregar evento de clic derecho para eliminar
+        card.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            eliminarCategoria(categoria.id, card);
+        });
+        
+        categoriasContainer.appendChild(card);
+    }
+
+    function volverACategorias() {
+        currentCategory = null;
+        document.querySelector('.back-button').remove();
+        categoriasContainer.style.display = 'flex';
+        productoContainer.style.display = 'none';
+        btnAgregarProducto.style.display = 'none';
+    }
+
+    // crearCardProducto: elimina la imagen de la card
+    function crearCardProducto(producto) {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.id = `producto-${producto.id}`;
+        card.dataset.id = producto.id;
+
+        const precio = typeof producto.precio === 'string' ? 
+                    parseFloat(producto.precio) : 
+                    producto.precio;
+
+        const imagenHTML = producto.imagenURL
+            ? `<img src="${producto.imagenURL}" class="card-img-top" alt="${producto.nombre}">`
+            : `<img src="https://via.placeholder.com/150" class="card-img-top" alt="Sin imagen">`;
+
+        // Usa id únicos para los botones y clases Bootstrap
+        card.innerHTML = `
+            ${imagenHTML}
+            <div class="card-body">
+                <h5 class="card-title">${producto.nombre}</h5>
+                <p class="card-text">Precio: $${precio.toFixed(2)}</p>
+                <div class="card-buttons d-flex justify-content-between">
+                    <button id="btn-eliminar-${producto.id}" class="btn btn-danger btn-sm" data-id="${producto.id}">Eliminar</button>
+                    <button id="btn-agregar-${producto.id}" class="btn btn-success btn-sm" data-id="${producto.id}">Agregar</button>
+                </div>
+            </div>
+        `;
+
+        // Ahora selecciona por id
+        card.querySelector(`#btn-eliminar-${producto.id}`).addEventListener('click', (e) => {
+            e.stopPropagation();
+            eliminarProducto(producto.id, card);
+        });
+
+        card.querySelector(`#btn-agregar-${producto.id}`).addEventListener('click', (e) => {
+            e.stopPropagation();
+            currentProduct = { ...producto, precio: parseFloat(producto.precio) };
+            currentQuantity = 1;
+            productQuantityInput.value = 1;
+            cantidadModal.show();
+        });
+
+        productoContainer.appendChild(card);
+    }
+
+    function eliminarCategoria(id, cardElement) {
+        Swal.fire({
+            title: '¿Eliminar categoría?',
+            text: "Esta acción eliminará la categoría y todos sus productos. ¿Deseas continuar?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let categorias = JSON.parse(localStorage.getItem('categorias')) || [];
+                categorias = categorias.filter(c => c.id !== id);
+                localStorage.setItem('categorias', JSON.stringify(categorias));
+                
+                let productos = JSON.parse(localStorage.getItem('productos')) || [];
+                productos = productos.filter(p => p.categoriaId !== id);
+                localStorage.setItem('productos', JSON.stringify(productos));
+                
+                cardElement.remove();
+                actualizarSelectCategorias();
+                eliminarProductosDeSidebarPorCategoria(id);
+                
+                Swal.fire({
+                    title: '¡Eliminada!',
+                    text: 'La categoría y sus productos han sido eliminados.',
+                    icon: 'success',
+                    timer: 1500,
+                    timerProgressBar: true
+                });
             }
         });
     }
 
-    // Seleccionar una categoría y mostrar sus productos
-    function seleccionarCategoria(catId) {
-        categoriaSeleccionada = catId;
-        cargarSidebarCategorias();
-
-        const categorias = JSON.parse(localStorage.getItem('categorias')) || [];
-        const productos = JSON.parse(localStorage.getItem('productos')) || [];
-        const cat = categorias.find(c => c.id === catId);
-
-        document.getElementById('tituloCategoriaSeleccionada').textContent = cat ? cat.nombre : 'Selecciona una <br> categoría';
-        document.getElementById('btnAgregarProducto').style.display = cat ? 'inline-block' : 'none';
-
-        const productosCat = productos.filter(p => p.categoriaId === catId);
-        const contenedor = document.getElementById('productosCategoriaSeleccionada');
-        contenedor.innerHTML = '';
-
-        if (productosCat.length === 0) {
-            contenedor.innerHTML = '<div class="alert alert-info">No hay productos en esta categoría.</div>';
-            return;
-        }
-
-        productosCat.forEach(producto => {
-            const card = document.createElement('div');
-            card.className = 'producto-card';
-            card.innerHTML = `
-                <img src="${producto.imagenURL}" class="producto-img" alt="${producto.nombre}">
-                <div class="producto-body">
-                    <h5 class="producto-title">${producto.nombre}</h5>
-                    <div class="producto-precio">$${producto.precio}</div>
-                    <div class="producto-actions">
-                        <button class="btn btn-info" onclick="editarProducto('${producto.id}')">Editar</button>
-                        <button class="btn btn-danger" onclick="eliminarProducto('${producto.id}')">Eliminar</button>
-                    </div>
-                </div>
-            `;
-            contenedor.appendChild(card);
+    function eliminarProducto(id, cardElement) {
+        Swal.fire({
+            title: '¿Eliminar producto?',
+            text: "Esta acción no se puede deshacer",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let productos = JSON.parse(localStorage.getItem('productos')) || [];
+                productos = productos.filter(p => p.id !== id);
+                localStorage.setItem('productos', JSON.stringify(productos));
+                cardElement.remove();
+                eliminarProductoDeSidebar(id);
+                
+                Swal.fire({
+                    title: '¡Eliminado!',
+                    text: 'El producto ha sido eliminado.',
+                    icon: 'success',
+                    timer: 1500,
+                    timerProgressBar: true
+                });
+            }
         });
     }
 
-    // Modifica cargarCategorias para solo actualizar sidebar y productos
-    function cargarCategorias() {
-        cargarSidebarCategorias();
+    function agregarProductoASidebar(producto, cantidad) {
+        let productosSeleccionados = JSON.parse(localStorage.getItem('productosSeleccionados')) || [];
+        const index = productosSeleccionados.findIndex(item => item.producto.id === producto.id);
+        
+        if (index >= 0) {
+            productosSeleccionados[index].cantidad += cantidad;
+        } else {
+            productosSeleccionados.push({ producto: producto, cantidad: cantidad });
+        }
+        
+        localStorage.setItem('productosSeleccionados', JSON.stringify(productosSeleccionados));
+        actualizarSidebar();
     }
 
-    // Modifica el botón de agregar producto para asignar la categoría seleccionada
-    document.getElementById('btnAgregarProducto').addEventListener('click', () => {
-        if (categoriaSeleccionada) {
-            document.getElementById('productoCategoriaId').value = categoriaSeleccionada;
-        }
-    });
-
-    window.editarProducto = editarProducto;
-    window.eliminarProducto = eliminarProducto;
-
-    function actualizarProductosDeCategoria(catId) {
-        const productos = JSON.parse(localStorage.getItem('productos')) || [];
-        const productosCat = productos.filter(p => p.categoriaId === catId);
-        const contenedor = document.getElementById('productosCategoriaSeleccionada');
-        contenedor.innerHTML = '';
-
-        if (productosCat.length === 0) {
-            contenedor.innerHTML = '<div class="alert alert-info">No hay productos en esta categoría.</div>';
-            return;
-        }
-
-        productosCat.forEach(producto => {
-            const card = document.createElement('div');
-            card.className = 'producto-card';
-            card.innerHTML = `
-                <img src="${producto.imagenURL}" class="producto-img" alt="${producto.nombre}">
-                <div class="producto-body">
-                    <h5 class="producto-title">${producto.nombre}</h5>
-                    <div class="producto-precio">$${producto.precio}</div>
-                    <div class="producto-actions">
-                        <button class="btn btn-info" onclick="editarProducto('${producto.id}')">Editar</button>
-                        <button class="btn btn-danger" onclick="eliminarProducto('${producto.id}')">Eliminar</button>
-                    </div>
-                </div>
-            `;
-            contenedor.appendChild(card);
-        });
+    function eliminarProductoDeSidebar(id) {
+        let productosSeleccionados = JSON.parse(localStorage.getItem('productosSeleccionados')) || [];
+        productosSeleccionados = productosSeleccionados.filter(item => item.producto.id !== id);
+        localStorage.setItem('productosSeleccionados', JSON.stringify(productosSeleccionados));
+        actualizarSidebar();
     }
 
-    document.querySelector('[data-bs-target="#categoriaModal"]').addEventListener('click', () => {
-        // Limpiar formulario y estado
-        categoriaForm.reset();
-        document.getElementById("categoriaId").value = "";
-        document.getElementById("nombreCategoria").value = "";
-        btnEliminarCategoria.style.display = 'none';
-        editingCategoria = null;
-        document.getElementById("categoriaModalLabel").textContent = "Nueva Categoría";
-    });
+    function eliminarProductosDeSidebarPorCategoria(categoriaId) {
+        let productosSeleccionados = JSON.parse(localStorage.getItem('productosSeleccionados')) || [];
+        productosSeleccionados = productosSeleccionados.filter(item => item.producto.categoriaId !== categoriaId);
+        localStorage.setItem('productosSeleccionados', JSON.stringify(productosSeleccionados));
+        actualizarSidebar();
+    }
+
+    // Inicialización
+    cargarCategorias();
 });
 </script>
