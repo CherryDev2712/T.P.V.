@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <%- include('load/head') %>
 <body>
+
+
     <%- include('load/nav') %>
     <main class="main-container d-flex" style="gap: 30px;">
-        <!-- Sidebar de categorías -->
-        <aside class="sidebar-categorias" style="width: 250px; min-width: 200px;">
+        <!-- Sidebar de categorías para desktop -->
+        <aside class="sidebar-categorias d-none d-md-block" style="width: 250px; min-width: 200px;">
             <h4>Categorías</h4>
-            <ul id="sidebarCategorias" class="list-group">
+            <ul id="sidebarCategoriasDesktop" class="list-group">
                 <!-- Las categorías se llenarán dinámicamente -->
             </ul>
             <button class="btn btn-dark w-100 mt-3" data-bs-toggle="modal" data-bs-target="#categoriaModal">
@@ -14,10 +16,31 @@
             </button>
         </aside>
 
+        <!-- Offcanvas para móvil -->
+        <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="offcanvasCategorias" aria-labelledby="offcanvasCategoriasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasCategoriasLabel">Categorías</h5>
+                <button type="button" class="btn-close btn btn-info" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul id="sidebarCategoriasMobile" class="list-group">
+                    <!-- Las categorías se llenarán dinámicamente -->
+                </ul>
+                <button class="btn btn-dark w-100 mt-3" data-bs-toggle="modal" data-bs-target="#categoriaModal">
+                    <i class="bi bi-box-seam"></i> Nueva Categoría
+                </button>
+            </div>
+        </div>
+
         <!-- Contenido principal: productos de la categoría seleccionada -->
         <section class="productos-section flex-grow-1">
+            <!-- Botón para mostrar categorías en móviles -->
+            <button class="btn btn-dark d-block d-md-none mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCategorias" aria-controls="offcanvasCategorias">
+                <i class="bi bi-list"></i> Categorías
+            </button>
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h1 id="tituloCategoriaSeleccionada">Selecciona una categoría</h1>
+                <h1 id="tituloCategoriaSeleccionada">Selecciona una <br> 
+                    categoría</h1>
                 <button class="btn btn-primary" id="btnAgregarProducto" data-bs-toggle="modal" data-bs-target="#productoModal" style="display: none;">
                     <i class="bi bi-basket"></i> Nuevo Producto
                 </button>
@@ -41,7 +64,7 @@
                         <input type="hidden" id="categoriaId">
                         <div class="mb-3">
                             <label for="nombreCategoria" class="form-label">Nombre de la categoría</label>
-                            <input type="text" class="form-control" id="nombreCategoria" required>
+                            <input type="text" class="form-control" id="nombreCategoria" required maxlength="30">
                         </div>
                         <div class="d-flex justify-content-between">
                             <button type="button" class="btn btn-danger" id="btnEliminarCategoria" style="display: none;">Eliminar</button>
@@ -339,9 +362,34 @@
         text-overflow: ellipsis;
         vertical-align: middle;
     }
+    #sidebarCategoriasMobile .list-group-item span {
+        display: inline-block;
+        max-width: 120px; /* Puedes ajustar este valor según el espacio disponible */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
     aside {
         min-width: 250px !important;
         max-width: 250px !important;
+    }
+
+    @media (max-width: 430px) {
+        .main-container {
+            flex-direction: column !important;
+            gap: 0 !important;
+            padding: 10px !important;
+        }
+        .sidebar-categorias {
+            display: none !important;
+        }
+        .productos-section {
+            padding: 10px !important;
+        }
+    }
+    .offcanvas-backdrop {
+        display: none;
     }
 </style>
 
@@ -893,81 +941,94 @@ document.addEventListener("DOMContentLoaded", () => {
     // Cargar categorías en sidebar y seleccionar la primera por defecto
     function cargarSidebarCategorias() {
         const categorias = JSON.parse(localStorage.getItem('categorias')) || [];
-        const sidebar = document.getElementById('sidebarCategorias');
-        sidebar.innerHTML = '';
+        const sidebarDesktop = document.getElementById('sidebarCategoriasDesktop');
+        const sidebarMobile = document.getElementById('sidebarCategoriasMobile');
+        [sidebarDesktop, sidebarMobile].forEach(sidebar => {
+            if (!sidebar) return;
+            sidebar.innerHTML = '';
 
-        if (categorias.length === 0) {
-            sidebar.innerHTML = '<li class="list-group-item text-muted">No hay categorías</li>';
-            document.getElementById('tituloCategoriaSeleccionada').textContent = 'Selecciona una categoría';
-            document.getElementById('btnAgregarProducto').style.display = 'none';
-            document.getElementById('productosCategoriaSeleccionada').innerHTML = '';
-            return;
-        }
+            if (categorias.length === 0) {
+                sidebar.innerHTML = '<li class="list-group-item text-muted">No hay categorías</li>';
+                if (sidebar === sidebarDesktop) {
+                    document.getElementById('tituloCategoriaSeleccionada').textContent = 'Selecciona una categoría';
+                    document.getElementById('btnAgregarProducto').style.display = 'none';
+                    document.getElementById('productosCategoriaSeleccionada').innerHTML = '';
+                }
+                return;
+            }
 
-        categorias.forEach((cat, idx) => {
-            const li = document.createElement('li');
-            li.className = 'list-group-item d-flex justify-content-between align-items-center list-group-item-action' + (categoriaSeleccionada === cat.id || (!categoriaSeleccionada && idx === 0) ? ' active' : '');
-            li.style.cursor = 'pointer';
+            categorias.forEach((cat, idx) => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center list-group-item-action' + (categoriaSeleccionada === cat.id || (!categoriaSeleccionada && idx === 0) ? ' active' : '');
+                li.style.cursor = 'pointer';
 
-            // Nombre de la categoría (clic para seleccionar)
-            const span = document.createElement('span');
-            span.textContent = cat.nombre;
-            span.onclick = () => seleccionarCategoria(cat.id);
-
-            // Botones editar y borrar
-            const btnGroup = document.createElement('div');
-            btnGroup.className = 'btn-group btn-group-sm';
-
-            const btnEdit = document.createElement('button');
-            btnEdit.className = 'btn btn-info';
-            btnEdit.innerHTML = '<i class="bi bi-pencil"></i>';
-            btnEdit.onclick = (e) => {
-                e.stopPropagation();
-                editarCategoria(cat.id);
-            };
-
-            const btnDelete = document.createElement('button');
-            btnDelete.className = 'btn btn-danger';
-            btnDelete.innerHTML = '<i class="bi bi-trash"></i>';
-            btnDelete.onclick = (e) => {
-                e.stopPropagation();
-                Swal.fire({
-                    title: '¿Eliminar categoría?',
-                    html: `¿Estás seguro de eliminar la categoría <strong>${cat.nombre}</strong> y todos sus productos?`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar',
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        eliminarCategoria(cat.id);
-                        Swal.fire({
-                            title: '¡Eliminada!',
-                            text: 'La categoría y sus productos han sido eliminados',
-                            icon: 'success',
-                            timer: 1500,
-                            timerProgressBar: true
-                        });
+                // Nombre de la categoría (clic para seleccionar)
+                const span = document.createElement('span');
+                span.textContent = cat.nombre;
+                span.onclick = () => {
+                    seleccionarCategoria(cat.id);
+                    // Si estamos en móvil, cierra el offcanvas al seleccionar
+                    if (sidebar === sidebarMobile) {
+                        const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('offcanvasCategorias'));
+                        offcanvas.hide();
                     }
-                });
-            };
+                };
 
-            btnGroup.appendChild(btnEdit);
-            btnGroup.appendChild(btnDelete);
+                // Botones editar y borrar
+                const btnGroup = document.createElement('div');
+                btnGroup.className = 'btn-group btn-group-sm';
 
-            li.appendChild(span);
-            li.appendChild(btnGroup);
+                const btnEdit = document.createElement('button');
+                btnEdit.className = 'btn btn-info';
+                btnEdit.innerHTML = '<i class="bi bi-pencil"></i>';
+                btnEdit.onclick = (e) => {
+                    e.stopPropagation();
+                    editarCategoria(cat.id);
+                };
 
-            sidebar.appendChild(li);
+                const btnDelete = document.createElement('button');
+                btnDelete.className = 'btn btn-danger';
+                btnDelete.innerHTML = '<i class="bi bi-trash"></i>';
+                btnDelete.onclick = (e) => {
+                    e.stopPropagation();
+                    Swal.fire({
+                        title: '¿Eliminar categoría?',
+                        html: `¿Estás seguro de eliminar la categoría <strong>${cat.nombre}</strong> y todos sus productos?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Sí, eliminar',
+                        cancelButtonText: 'Cancelar',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            eliminarCategoria(cat.id);
+                            Swal.fire({
+                                title: '¡Eliminada!',
+                                text: 'La categoría y sus productos han sido eliminados',
+                                icon: 'success',
+                                timer: 1500,
+                                timerProgressBar: true
+                            });
+                        }
+                    });
+                };
+
+                btnGroup.appendChild(btnEdit);
+                btnGroup.appendChild(btnDelete);
+
+                li.appendChild(span);
+                li.appendChild(btnGroup);
+
+                sidebar.appendChild(li);
+            });
+
+            // Selecciona la primera si no hay selección
+            if (!categoriaSeleccionada && categorias.length > 0 && sidebar === sidebarDesktop) {
+                seleccionarCategoria(categorias[0].id);
+            }
         });
-
-        // Selecciona la primera si no hay selección
-        if (!categoriaSeleccionada && categorias.length > 0) {
-            seleccionarCategoria(categorias[0].id);
-        }
     }
 
     // Seleccionar una categoría y mostrar sus productos
@@ -979,7 +1040,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const productos = JSON.parse(localStorage.getItem('productos')) || [];
         const cat = categorias.find(c => c.id === catId);
 
-        document.getElementById('tituloCategoriaSeleccionada').textContent = cat ? cat.nombre : 'Selecciona una categoría';
+        document.getElementById('tituloCategoriaSeleccionada').textContent = cat ? cat.nombre : 'Selecciona una <br> categoría';
         document.getElementById('btnAgregarProducto').style.display = cat ? 'inline-block' : 'none';
 
         const productosCat = productos.filter(p => p.categoriaId === catId);
