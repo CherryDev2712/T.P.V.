@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <%- include('load/head') %>
 <body>
-    <%- include('load/nav') %>
-    <main class="main-container d-flex" style="gap: 30px;">
-        <!-- Sidebar de categorías -->
-        <aside class="sidebar-categorias" style="width: 250px; min-width: 200px;">
-            <h4>Categorías</h4>
-            <ul id="sidebarCategorias" class="list-group">
-                <!-- Las categorías se llenarán dinámicamente -->
-            </ul>
-            <button class="btn btn-dark w-100 mt-3" data-bs-toggle="modal" data-bs-target="#categoriaModal">
-                <i class="bi bi-box-seam"></i> Nueva Categoría
-            </button>
-        </aside>
 
-        <!-- Contenido principal: productos de la categoría seleccionada -->
-        <section class="productos-section flex-grow-1">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h1 id="tituloCategoriaSeleccionada">Selecciona una categoría</h1>
-                <button class="btn btn-primary" id="btnAgregarProducto" data-bs-toggle="modal" data-bs-target="#productoModal" style="display: none;">
-                    <i class="bi bi-basket"></i> Nuevo Producto
-                </button>
+
+    <%- include('load/nav') %>
+    <main class="main-container">
+        <div class="content">
+            <h1>Inventario de Productos</h1>
+                  
+            <div class="categorias-container" id="categorias">
+                <!-- Las categorías con sus productos se agregarán aquí dinámicamente -->
             </div>
-            <div class="productos-container" id="productosCategoriaSeleccionada">
-                <!-- Los productos se llenarán dinámicamente -->
-            </div>
-        </section>
+        </div>
+
+        <!-- Botón flotante para agregar categorías -->
+        <button class="btn btn-dark btn-content" data-bs-toggle="modal" data-bs-target="#categoriaModal">
+            <span><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-folder-plus" viewBox="0 0 16 16">
+                <path d="m.5 3 .04.87a1.99 1.99 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14H9v-1H2.826a1 1 0 0 1-.995-.91l-.637-7A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09L14.54 8h1.005l.256-2.819A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2zm5.672-1a1 1 0 0 1 .707.293L7.586 3H2.19c-.24 0-.47.042-.683.12L1.5 2.98a1 1 0 0 1 1-.98h3.672z"/>
+                <path d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 1 1 0 1H14v1.5a.5.5 0 1 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z"/>
+              </svg></span>
+        </button>
+
+        <!-- Botón flotante para agregar productos -->
+        <button class="btn btn-primary btn-content" id="btnAgregarProducto" data-bs-toggle="modal" data-bs-target="#productoModal" style="right: 100px;">
+            <span><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5"/>
+                <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+              </svg></span>
+        </button>
     </main>
 
     <!-- Modal para añadir/editar categoría (modificado para editar un <li>) -->
@@ -41,7 +43,7 @@
                         <input type="hidden" id="categoriaId">
                         <div class="mb-3">
                             <label for="nombreCategoria" class="form-label">Nombre de la categoría</label>
-                            <input type="text" class="form-control" id="nombreCategoria" required>
+                            <input type="text" class="form-control" id="nombreCategoria" required maxlength="30">
                         </div>
                         <div class="d-flex justify-content-between">
                             <button type="button" class="btn btn-danger" id="btnEliminarCategoria" style="display: none;">Eliminar</button>
@@ -264,65 +266,6 @@
     h1 {
         color: #EAEAEA;
         margin-bottom: 20px;
-    }
-    /* Modales */
-    .modal-content {
-        background: #23272F;
-        color: #EAEAEA;
-        border-radius: 12px;
-        border: 1px solid #393E46;
-    }
-    .modal-header, .modal-footer {
-        border: none;
-    }
-    .form-control, .form-select {
-        background: #181A20;
-        color: #EAEAEA;
-        border: 1px solid #393E46;
-    }
-    .form-control:focus, .form-select:focus {
-        background: #23272F;
-        color: #fff;
-        border-color: #00DFA2;
-        box-shadow: none;
-    }
-    .btn-close {
-        filter: invert(1);
-    }
-    .alert-info {
-        background: #23272F;
-        color: #00A9FF;
-        border: 1px solid #00A9FF;
-    }
-    .modal-backdrop {
-        display: none;
-    }
-    .modal-dialog {
-        box-shadow: 0 80px 32px rgba(0,0,0,0.45);
-    }
-    .sidebar-categorias {
-        background: #23272F;
-        border-radius: 12px;
-        padding: 20px;
-        min-height: 400px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.13);
-    }
-    .list-group-item.active {
-        background: #00DFA2 !important;
-        color: #23272F !important;
-        font-weight: bold;
-    }
-    .productos-section {
-        background: #23272F;
-        border-radius: 12px;
-        padding: 20px;
-        min-height: 400px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.13);
-    }
-    .productos-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
     }
 </style>
 
@@ -814,234 +757,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Función para eliminar producto
-    window.eliminarProducto = function(id) {
-        const productos = JSON.parse(localStorage.getItem('productos')) || [];
-        const producto = productos.find(p => p.id == id);
-
-        if (!producto) return;
-
-        Swal.fire({
-            title: '¿Eliminar producto?',
-            html: `¿Estás seguro de eliminar el producto <strong>${producto.nombre}</strong>?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Eliminar del localStorage
-                let productos = JSON.parse(localStorage.getItem('productos')) || [];
-                productos = productos.filter(producto => producto.id != id);
-                localStorage.setItem('productos', JSON.stringify(productos));
-                actualizarProductosDeCategoria(producto.categoriaId);
-
-                Swal.fire({
-                    title: '¡Eliminado!',
-                    text: 'El producto ha sido eliminado',
-                    icon: 'success',
-                    timer: 1500,
-                    timerProgressBar: true,
-                    showConfirmButton: false
-                });
-            }
-        });
-    }
-
-    // Convertir archivo a base64
-    function fileToBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
-
-    // Mostrar mensaje de bienvenida al cargar
-    Swal.fire({
-        title: 'Inventario de Productos',
-        text: 'Bienvenido al sistema de gestión de inventario',
-        icon: 'info',
-        timer: 2000,
-        timerProgressBar: true,
-        showConfirmButton: false
-    });
-
-    // Cargar categorías en sidebar y seleccionar la primera por defecto
-    function cargarSidebarCategorias() {
-        const categorias = JSON.parse(localStorage.getItem('categorias')) || [];
-        const sidebar = document.getElementById('sidebarCategorias');
-        sidebar.innerHTML = '';
-
-        if (categorias.length === 0) {
-            sidebar.innerHTML = '<li class="list-group-item text-muted">No hay categorías</li>';
-            document.getElementById('tituloCategoriaSeleccionada').textContent = 'Selecciona una categoría';
-            document.getElementById('btnAgregarProducto').style.display = 'none';
-            document.getElementById('productosCategoriaSeleccionada').innerHTML = '';
-            return;
-        }
-
-        categorias.forEach((cat, idx) => {
-            const li = document.createElement('li');
-            li.className = 'list-group-item d-flex justify-content-between align-items-center list-group-item-action' + (categoriaSeleccionada === cat.id || (!categoriaSeleccionada && idx === 0) ? ' active' : '');
-            li.style.cursor = 'pointer';
-
-            // Nombre de la categoría (clic para seleccionar)
-            const span = document.createElement('span');
-            span.textContent = cat.nombre;
-            span.onclick = () => seleccionarCategoria(cat.id);
-
-            // Botones editar y borrar
-            const btnGroup = document.createElement('div');
-            btnGroup.className = 'btn-group btn-group-sm';
-
-            const btnEdit = document.createElement('button');
-            btnEdit.className = 'btn btn-info';
-            btnEdit.innerHTML = '<i class="bi bi-pencil"></i>';
-            btnEdit.onclick = (e) => {
-                e.stopPropagation();
-                editarCategoria(cat.id);
-            };
-
-            const btnDelete = document.createElement('button');
-            btnDelete.className = 'btn btn-danger';
-            btnDelete.innerHTML = '<i class="bi bi-trash"></i>';
-            btnDelete.onclick = (e) => {
-                e.stopPropagation();
-                Swal.fire({
-                    title: '¿Eliminar categoría?',
-                    html: `¿Estás seguro de eliminar la categoría <strong>${cat.nombre}</strong> y todos sus productos?`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar',
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        eliminarCategoria(cat.id);
-                        Swal.fire({
-                            title: '¡Eliminada!',
-                            text: 'La categoría y sus productos han sido eliminados',
-                            icon: 'success',
-                            timer: 1500,
-                            timerProgressBar: true
-                        });
-                    }
-                });
-            };
-
-            btnGroup.appendChild(btnEdit);
-            btnGroup.appendChild(btnDelete);
-
-            li.appendChild(span);
-            li.appendChild(btnGroup);
-
-            sidebar.appendChild(li);
-        });
-
-        // Selecciona la primera si no hay selección
-        if (!categoriaSeleccionada && categorias.length > 0) {
-            seleccionarCategoria(categorias[0].id);
-        }
-    }
-
-    // Seleccionar una categoría y mostrar sus productos
-    function seleccionarCategoria(catId) {
-        categoriaSeleccionada = catId;
-        cargarSidebarCategorias();
-
-        const categorias = JSON.parse(localStorage.getItem('categorias')) || [];
-        const productos = JSON.parse(localStorage.getItem('productos')) || [];
-        const cat = categorias.find(c => c.id === catId);
-
-        document.getElementById('tituloCategoriaSeleccionada').textContent = cat ? cat.nombre : 'Selecciona una categoría';
-        document.getElementById('btnAgregarProducto').style.display = cat ? 'inline-block' : 'none';
-
-        const productosCat = productos.filter(p => p.categoriaId === catId);
-        const contenedor = document.getElementById('productosCategoriaSeleccionada');
-        contenedor.innerHTML = '';
-
-        if (productosCat.length === 0) {
-            contenedor.innerHTML = '<div class="alert alert-info">No hay productos en esta categoría.</div>';
-            return;
-        }
-
-        productosCat.forEach(producto => {
-            const card = document.createElement('div');
-            card.className = 'producto-card';
-            card.innerHTML = `
-                <img src="${producto.imagenURL}" class="producto-img" alt="${producto.nombre}">
-                <div class="producto-body">
-                    <h5 class="producto-title">${producto.nombre}</h5>
-                    <div class="producto-precio">$${producto.precio}</div>
-                    <div class="producto-actions">
-                        <button class="btn btn-info" onclick="editarProducto('${producto.id}')">Editar</button>
-                        <button class="btn btn-danger" onclick="eliminarProducto('${producto.id}')">Eliminar</button>
-                    </div>
-                </div>
-            `;
-            contenedor.appendChild(card);
-        });
-    }
-
-    // Modifica cargarCategorias para solo actualizar sidebar y productos
-    function cargarCategorias() {
-        cargarSidebarCategorias();
-    }
-
-    // Modifica el botón de agregar producto para asignar la categoría seleccionada
-    document.getElementById('btnAgregarProducto').addEventListener('click', () => {
-        if (categoriaSeleccionada) {
-            document.getElementById('productoCategoriaId').value = categoriaSeleccionada;
+        // Función para eliminar producto
+        function eliminarProducto(id) {
+            // Eliminar del localStorage
+            let productos = JSON.parse(localStorage.getItem('productos')) || [];
+            productos = productos.filter(producto => producto.id != id);
+            localStorage.setItem('productos', JSON.stringify(productos));
+            
+            // Recargar vista
+            cargarCategorias();
         }
     });
-
-    window.editarProducto = editarProducto;
-    window.eliminarProducto = eliminarProducto;
-
-    function actualizarProductosDeCategoria(catId) {
-        const productos = JSON.parse(localStorage.getItem('productos')) || [];
-        const productosCat = productos.filter(p => p.categoriaId === catId);
-        const contenedor = document.getElementById('productosCategoriaSeleccionada');
-        contenedor.innerHTML = '';
-
-        if (productosCat.length === 0) {
-            contenedor.innerHTML = '<div class="alert alert-info">No hay productos en esta categoría.</div>';
-            return;
-        }
-
-        productosCat.forEach(producto => {
-            const card = document.createElement('div');
-            card.className = 'producto-card';
-            card.innerHTML = `
-                <img src="${producto.imagenURL}" class="producto-img" alt="${producto.nombre}">
-                <div class="producto-body">
-                    <h5 class="producto-title">${producto.nombre}</h5>
-                    <div class="producto-precio">$${producto.precio}</div>
-                    <div class="producto-actions">
-                        <button class="btn btn-info" onclick="editarProducto('${producto.id}')">Editar</button>
-                        <button class="btn btn-danger" onclick="eliminarProducto('${producto.id}')">Eliminar</button>
-                    </div>
-                </div>
-            `;
-            contenedor.appendChild(card);
-        });
-    }
-
-    document.querySelector('[data-bs-target="#categoriaModal"]').addEventListener('click', () => {
-        // Limpiar formulario y estado
-        categoriaForm.reset();
-        document.getElementById("categoriaId").value = "";
-        document.getElementById("nombreCategoria").value = "";
-        btnEliminarCategoria.style.display = 'none';
-        editingCategoria = null;
-        document.getElementById("categoriaModalLabel").textContent = "Nueva Categoría";
-    });
-});
 </script>
