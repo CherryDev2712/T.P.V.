@@ -286,9 +286,11 @@
         border-color: #00DFA2;
     }
     .categoria-card h3 {
-        margin: 0;
-        color: #00DFA2;
-        font-weight: 600;
+        max-width: 160px; /* Ajusta según el ancho de tu card */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
     }
     .back-button {
         margin-bottom: 20px;
