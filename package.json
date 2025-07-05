@@ -1,6 +1,6 @@
 {
   "name": "pos-system",
-  "version": "1.0.0",
+  "version": "1.6.1",
   "description": "Terminal Punto de Venta",
   "type": "module",
   "main": "server.js",
